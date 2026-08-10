@@ -335,7 +335,10 @@ nav{position:relative;z-index:200;height:56px;display:flex;align-items:center;ju
 .toast.show{opacity:1;transform:translateY(0)}
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const supabase=window.supabase.createClient('https://qkljnymsgorzlglohnql.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrbGpueW1zZ29yemxnbG9obnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNDg3OTIsImV4cCI6MjEwMTkyNDc5Mn0.ogG9SA3UaZLquQN93Ow6Q-LZZAP6_-40CQIO46uPXJI');
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 function oauth(provider){toast(`Connecting to ${provider}… (demo)`)}
 
@@ -448,7 +451,7 @@ const spinner=document.getElementById('spinner');
 const submitLabel=document.getElementById('submitLabel');
 const submitArrow=document.getElementById('submitArrow');
 
-form.addEventListener('submit',function(e){
+form.addEventListener('submit',async function(e){
   e.preventDefault();
 
   if(fullnameEl.value.trim().length<2){toast('Enter your full name to continue');fullnameEl.focus();return}
@@ -469,21 +472,50 @@ form.addEventListener('submit',function(e){
   nodes[1].classList.add('now');
   nodes[1].querySelector('.node-sub').textContent='Locking in your role & goal…';
 
-  setTimeout(()=>{
-    nodes[1].classList.remove('now');nodes[1].classList.add('passed');
-    nodes[1].querySelector('.node-dot').textContent='✓';
-    nodes[2].classList.add('now');
-    nodes[2].querySelector('.node-sub').textContent='Generating your roadmap…';
+  // ── REAL SIGNUP ──
+  const {data,error}=await supabase.auth.signUp({
+    email:emailEl.value.trim(),
+    password:passwordEl.value
+  });
 
-    setTimeout(()=>{
-      nodes[2].classList.remove('now');nodes[2].classList.add('passed');
-      nodes[2].querySelector('.node-dot').textContent='✓';
-      nodes[3].classList.add('now');
-      nodes[3].querySelector('.node-sub').textContent='Redirecting to your dashboard…';
-      submitLabel.textContent='Account created';
-      toast(`Welcome, ${fullnameEl.value.trim().split(' ')[0]} — this is a front-end demo, no account was created`);
-    },1000);
-  },1000);
+  if(error){
+    toast(error.message);
+    submitBtn.disabled=false;
+    spinner.style.display='none';
+    submitLabel.textContent='Create account';
+    submitArrow.style.display='inline-block';
+    nodes[0].classList.add('now');nodes[0].classList.remove('passed');
+    nodes[0].querySelector('.node-dot').textContent='1';
+    nodes[1].classList.remove('now');
+    return;
+  }
+
+  nodes[1].classList.remove('now');nodes[1].classList.add('passed');
+  nodes[1].querySelector('.node-dot').textContent='✓';
+  nodes[2].classList.add('now');
+  nodes[2].querySelector('.node-sub').textContent='Saving your profile…';
+
+  // ── SAVE PROFILE FIELDS ──
+  const {error:profileError}=await supabase.from('profiles').insert({
+    id:data.user.id,
+    full_name:fullnameEl.value.trim(),
+    username:usernameEl.value.trim(),
+    role:curRole,
+    goal:curGoal
+  });
+
+  if(profileError){
+    toast('Account created, but profile save failed: '+profileError.message);
+  }
+
+  nodes[2].classList.remove('now');nodes[2].classList.add('passed');
+  nodes[2].querySelector('.node-dot').textContent='✓';
+  nodes[3].classList.add('now');
+  nodes[3].querySelector('.node-sub').textContent='Redirecting to your dashboard…';
+  submitLabel.textContent='Account created';
+  toast(`Welcome, ${fullnameEl.value.trim().split(' ')[0]} — account created!`);
+
+  setTimeout(()=>{window.location.href='index.html'},1200);
 });
 
 [fullnameEl,emailEl,usernameEl,passwordEl].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();form.requestSubmit()}}));
