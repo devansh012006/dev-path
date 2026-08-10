@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Daily Challenge — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--amber);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.ch-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.ch-title-wrap{display:flex;align-items:center;gap:14px}
+.ch-header-icon{width:46px;height:46px;border-radius:11px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.ch-title-wrap h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.ch-title-wrap p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.streak-badge{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border2);border-radius:99px;padding:.5rem 1rem}
+.streak-badge b{font-family:'Space Grotesk',sans-serif;color:var(--amber);font-size:1rem}
+.streak-badge span{font-size:.78rem;color:var(--muted)}
+
+/* LAYOUT */
+.ch-main{max-width:1200px;margin:0 auto;padding:2rem;display:grid;grid-template-columns:1.4fr 1fr;gap:1.75rem;align-items:start}
+@media(max-width:900px){.ch-main{grid-template-columns:1fr}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.panel-pad{padding:1.5rem}
+
+/* PROBLEM CARD */
+.prob-meta{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.pill{font-size:.72rem;font-weight:600;padding:.3rem .7rem;border-radius:99px;border:1px solid var(--border2);color:var(--muted)}
+.pill.lang{background:rgba(79,126,255,.1);color:var(--blue);border-color:rgba(79,126,255,.25)}
+.pill.easy{background:rgba(16,185,129,.1);color:var(--mint);border-color:rgba(16,185,129,.25)}
+.pill.medium{background:rgba(245,158,11,.1);color:var(--amber);border-color:rgba(245,158,11,.25)}
+.pill.hard{background:rgba(244,63,94,.1);color:var(--rose);border-color:rgba(244,63,94,.25)}
+.prob-title{font-family:'Space Grotesk',sans-serif;font-size:1.25rem;font-weight:700;margin-bottom:.6rem}
+.prob-desc{font-size:.88rem;color:var(--muted);line-height:1.65;margin-bottom:1rem}
+.prob-stats{display:flex;gap:1.2rem;font-size:.78rem;color:var(--muted);padding-top:1rem;border-top:1px solid var(--border)}
+
+/* EDITOR */
+.editor-bar{display:flex;justify-content:space-between;align-items:center;padding:.7rem 1.1rem;background:var(--surface);border-bottom:1px solid var(--border)}
+.editor-bar .dots{display:flex;gap:6px}
+.editor-bar .dots span{width:9px;height:9px;border-radius:50%}
+.editor-bar .dots span:nth-child(1){background:#F43F5E}
+.editor-bar .dots span:nth-child(2){background:#F59E0B}
+.editor-bar .dots span:nth-child(3){background:#10B981}
+.editor-actions{display:flex;gap:.5rem}
+.btn-sm{background:var(--card2);color:var(--text);border:1px solid var(--border2);font-size:.78rem;font-weight:500;padding:.4rem .85rem;border-radius:7px;cursor:pointer;transition:all .2s}
+.btn-sm:hover{border-color:var(--blue)}
+.btn-run{background:var(--mint);color:#052e1e;font-weight:700;border:none}
+.btn-run:hover{filter:brightness(1.1)}
+.btn-run:disabled{opacity:.6;cursor:not-allowed}
+textarea#codeEditor{width:100%;min-height:280px;background:var(--bg2);color:var(--text);border:none;outline:none;resize:vertical;font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.6;padding:1.1rem;tab-size:2}
+
+/* OUTPUT */
+.output{border-top:1px solid var(--border);padding:1rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;min-height:52px;display:flex;align-items:center;gap:10px}
+.output.idle{color:var(--muted)}
+.output.pass{color:var(--mint)}
+.output.fail{color:var(--rose)}
+.output .spin{width:13px;height:13px;border-radius:50%;border:2px solid var(--border2);border-top-color:var(--blue);animation:spin .7s linear infinite;display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HINT/SOLUTION */
+.hint-box{border-top:1px solid var(--border);padding:1rem 1.5rem;font-size:.82rem;color:var(--muted);line-height:1.6;display:none}
+.hint-box.show{display:block}
+.hint-box code{background:var(--surface);padding:1px 5px;border-radius:4px;color:var(--teal);font-family:'JetBrains Mono',monospace}
+pre.sol-code{margin-top:.6rem;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:.9rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--text);overflow-x:auto;white-space:pre}
+
+/* SIDEBAR: STREAK CALENDAR */
+.side-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.9rem}
+.cal-stats{display:flex;justify-content:space-between;margin-bottom:1.1rem}
+.cal-stat b{display:block;font-family:'Space Grotesk',sans-serif;font-size:1.3rem;color:var(--text)}
+.cal-stat span{font-size:.72rem;color:var(--muted)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-day{aspect-ratio:1;border-radius:5px;background:var(--surface);border:1px solid var(--border2)}
+.cal-day.solved{background:var(--mint);border-color:var(--mint)}
+.cal-day.today{border:2px solid var(--amber)}
+.cal-day.today.solved{border-color:var(--mint)}
+.cal-legend{display:flex;align-items:center;gap:14px;margin-top:1rem;font-size:.72rem;color:var(--muted)}
+.cal-legend .sw{display:inline-flex;align-items:center;gap:5px}
+.cal-legend .sw i{width:9px;height:9px;border-radius:3px;display:inline-block}
+
+/* ARCHIVE LIST */
+.archive-item{display:flex;align-items:center;gap:.7rem;padding:.7rem;border-radius:8px;cursor:pointer;transition:background .2s;border:1px solid transparent}
+.archive-item:hover{background:var(--surface)}
+.archive-item.active{background:rgba(79,126,255,.08);border-color:rgba(79,126,255,.3)}
+.archive-day{width:34px;height:34px;border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.archive-day.solved{background:rgba(16,185,129,.12);color:var(--mint)}
+.archive-info{flex:1;min-width:0}
+.archive-info .a-title{font-size:.82rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.archive-info .a-meta{font-size:.72rem;color:var(--muted);margin-top:1px}
+
+footer{max-width:1200px;margin:2rem auto 0;padding:2rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;font-size:.82rem;color:var(--muted)}
+footer .footer-links{display:flex;gap:1.3rem}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="4" cy="4" r="2" fill="white" opacity=".9"/>
+        <circle cx="12" cy="4" r="2" fill="white" opacity=".5"/>
+        <circle cx="8" cy="12" r="2" fill="white" opacity=".9"/>
+        <line x1="4" y1="4" x2="12" y2="4" stroke="white" stroke-width="1.2" opacity=".4"/>
+        <line x1="4" y1="4" x2="8" y2="12" stroke="white" stroke-width="1.2" opacity=".4"/>
+        <line x1="12" y1="4" x2="8" y2="12" stroke="white" stroke-width="1.2" opacity=".4"/>
+      </svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="daily-challenge.html">Challenges</a>
+    <a href="index.html#community">Community</a>
+    <a href="signup.html" class="btn-nav">Sign Up Free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">Home</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span>Daily Challenge</span>
+</div>
+
+<div class="ch-header">
+  <div class="ch-title-wrap">
+    <div class="ch-header-icon">⚡</div>
+    <div>
+      <h1>Daily Challenge</h1>
+      <p>One curated problem a day. Solve it, keep your streak alive.</p>
+    </div>
+  </div>
+  <div class="streak-badge">
+    🔥 <b id="streakCount">0</b> <span>day streak</span>
+  </div>
+</div>
+
+<div class="ch-main">
+
+  <!-- LEFT: PROBLEM + EDITOR -->
+  <div>
+    <div class="panel panel-pad" style="margin-bottom:1.25rem">
+      <div class="prob-meta">
+        <span class="pill lang" id="probLang">JavaScript</span>
+        <span class="pill" id="probDiff">Intermediate</span>
+      </div>
+      <div class="prob-title" id="probTitle">Implement a debounce function from scratch</div>
+      <div class="prob-desc" id="probDesc">Write a debounce utility in JavaScript without using any libraries. Test it with a search input simulation.</div>
+      <div class="prob-stats">
+        <span id="probDay">⚡ Day 247</span>
+        <span>⏱ ~25 min</span>
+        <span>👥 3,841 solving today</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="editor-bar">
+        <div class="dots"><span></span><span></span><span></span></div>
+        <div class="editor-actions">
+          <button class="btn-sm" onclick="resetCode()">Reset</button>
+          <button class="btn-sm" onclick="toggleHint()">Hint</button>
+          <button class="btn-sm" onclick="toggleSolution()">Solution</button>
+          <button class="btn-sm btn-run" id="runBtn" onclick="runTests()">Run Tests ▶</button>
+        </div>
+      </div>
+      <textarea id="codeEditor" spellcheck="false"></textarea>
+      <div class="output idle" id="output">
+        <div class="spin" id="outSpin"></div>
+        <span id="outText">Write your solution, then hit "Run Tests".</span>
+      </div>
+      <div class="hint-box" id="hintBox"></div>
+      <div class="hint-box" id="solutionBox"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: STREAK + ARCHIVE -->
+  <div>
+    <div class="panel panel-pad" style="margin-bottom:1.25rem">
+      <div class="side-label">Your activity</div>
+      <div class="cal-stats">
+        <div class="cal-stat"><b id="statSolved">0</b><span>solved (35d)</span></div>
+        <div class="cal-stat"><b id="statStreak">0</b><span>current streak</span></div>
+        <div class="cal-stat"><b id="statRate">0%</b><span>completion</span></div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="cal-legend">
+        <span class="sw"><i style="background:var(--mint)"></i>Solved</span>
+        <span class="sw"><i style="background:var(--surface);border:1px solid var(--border2)"></i>Missed</span>
+        <span class="sw"><i style="background:var(--surface);border:2px solid var(--amber)"></i>Today</span>
+      </div>
+    </div>
+
+    <div class="panel panel-pad">
+      <div class="side-label">Past challenges</div>
+      <div id="archiveList"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="daily-challenge.html">Challenges</a><a href="index.html#community">Community</a><a href="#">GitHub</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── CHALLENGE DATA ──
+// Each challenge is a pure/self-contained problem so it can be graded entirely
+// client-side. `entry` is the function name we extract from the editor.
+const challenges=[
+  {
+    day:247,today:true,lang:'JavaScript',diff:'Intermediate',diffClass:'medium',
+    title:'Implement a debounce function from scratch',
+    desc:'Write a debounce utility in JavaScript without using any libraries. Test it with a search input simulation.',
+    entry:'debounce',
+    starter:`function debounce(fn, delay) {
+  // Return a new function that delays calling fn
+  // until "delay" ms have passed since the last call.
+
+}`,
+    hint:'Use <code>setTimeout</code> to schedule the call, and <code>clearTimeout</code> on every new invocation to cancel the pending one.',
+    solution:`function debounce(fn, delay) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}`,
+    test: async (fn)=>{
+      let calls=0;
+      let debounced;
+      try{ debounced = fn(()=>calls++, 50); }catch(e){ return {pass:false,message:'Error while calling debounce: '+e.message}; }
+      if(typeof debounced!=='function') return {pass:false,message:'debounce(fn, delay) should return a function.'};
+      debounced(); debounced(); debounced();
+      await new Promise(r=>setTimeout(r,120));
+      if(calls===1) return {pass:true,message:'Passed — the inner function ran exactly once after 3 rapid calls.'};
+      return {pass:false,message:`Expected the inner function to run once, but it ran ${calls} time(s). Check that each call resets the timer.`};
+    }
+  },
+  {
+    day:246,lang:'JavaScript',diff:'Easy',diffClass:'easy',
+    title:'Flatten a nested array',
+    desc:'Write a function that takes an arbitrarily nested array and returns a single flat array, without using Array.prototype.flat().',
+    entry:'flattenArray',
+    starter:`function flattenArray(arr) {
+  // Flatten arr of any nesting depth into a single-level array
+
+}`,
+    hint:'Recursion works well here: for each item, if it\'s an array, flatten it and spread the result; otherwise keep it.',
+    solution:`function flattenArray(arr) {
+  return arr.reduce((flat, item) =>
+    flat.concat(Array.isArray(item) ? flattenArray(item) : item), []);
+}`,
+    test: async (fn)=>{
+      const input=[1,[2,[3,[4,5]],6]];
+      const expected=[1,2,3,4,5,6];
+      let out;
+      try{ out=fn(input); }catch(e){ return {pass:false,message:'Error: '+e.message}; }
+      const ok=Array.isArray(out)&&JSON.stringify(out)===JSON.stringify(expected);
+      return {pass:ok,message:ok?'Passed — nested array fully flattened.':`Expected [${expected.join(', ')}] but got ${JSON.stringify(out)}.`};
+    }
+  },
+  {
+    day:245,lang:'JavaScript',diff:'Easy',diffClass:'easy',
+    title:'Reverse a string without .reverse()',
+    desc:'Write a function that reverses a string without using the built-in Array.prototype.reverse() method.',
+    entry:'reverseString',
+    starter:`function reverseString(str) {
+  // Return str reversed
+
+}`,
+    hint:'You can loop from the end of the string backwards and build a new string, or use recursion.',
+    solution:`function reverseString(str) {
+  let result = '';
+  for (let i = str.length - 1; i >= 0; i--) {
+    result += str[i];
+  }
+  return result;
+}`,
+    test: async (fn)=>{
+      let out;
+      try{ out=fn('hello world'); }catch(e){ return {pass:false,message:'Error: '+e.message}; }
+      const ok=out==='dlrow olleh';
+      return {pass:ok,message:ok?'Passed — string reversed correctly.':`Expected "dlrow olleh" but got "${out}".`};
+    }
+  },
+  {
+    day:244,lang:'JavaScript',diff:'Medium',diffClass:'medium',
+    title:'Two Sum',
+    desc:'Given an array of numbers and a target, return the indices of the two numbers that add up to the target.',
+    entry:'twoSum',
+    starter:`function twoSum(nums, target) {
+  // Return [i, j] such that nums[i] + nums[j] === target
+
+}`,
+    hint:'A hash map from value → index lets you check "have I already seen target - current" in one pass, O(n) instead of O(n²).',
+    solution:`function twoSum(nums, target) {
+  const seen = new Map();
+  for (let i = 0; i < nums.length; i++) {
+    const need = target - nums[i];
+    if (seen.has(need)) return [seen.get(need), i];
+    seen.set(nums[i], i);
+  }
+  return [];
+}`,
+    test: async (fn)=>{
+      let out;
+      try{ out=fn([2,7,11,15],9); }catch(e){ return {pass:false,message:'Error: '+e.message}; }
+      const ok=Array.isArray(out)&&out.length===2&&[...out].sort().join(',')==='0,1';
+      return {pass:ok,message:ok?'Passed — found the correct pair of indices.':`Expected indices [0,1] but got ${JSON.stringify(out)}.`};
+    }
+  },
+  {
+    day:243,lang:'JavaScript',diff:'Medium',diffClass:'medium',
+    title:'Implement a memoize function',
+    desc:'Write a higher-order function memoize(fn) that caches results so repeated calls with the same argument skip recomputation.',
+    entry:'memoize',
+    starter:`function memoize(fn) {
+  // Return a new function that caches fn's results by argument
+
+}`,
+    hint:'Keep a Map keyed by the (stringified) argument. On each call, check the cache before invoking fn.',
+    solution:`function memoize(fn) {
+  const cache = new Map();
+  return function(arg) {
+    if (cache.has(arg)) return cache.get(arg);
+    const result = fn(arg);
+    cache.set(arg, result);
+    return result;
+  };
+}`,
+    test: async (fn)=>{
+      let calls=0;
+      const slow=(n)=>{calls++;return n*2};
+      let memoized;
+      try{ memoized=fn(slow); }catch(e){ return {pass:false,message:'Error: '+e.message}; }
+      memoized(4); memoized(4); memoized(4);
+      const ok=calls===1;
+      return {pass:ok,message:ok?'Passed — repeated calls with the same input only computed once.':`Expected the inner function to run once, but it ran ${calls} time(s).`};
+    }
+  },
+  {
+    day:242,lang:'JavaScript',diff:'Medium',diffClass:'medium',
+    title:'Deep clone an object',
+    desc:'Write a function that deep clones a plain object, so nested objects and arrays are copied, not referenced.',
+    entry:'deepClone',
+    starter:`function deepClone(obj) {
+  // Return a deep copy of obj
+
+}`,
+    hint:'Recurse into any value that is an object or array. Primitives can be returned as-is.',
+    solution:`function deepClone(obj) {
+  if (obj === null || typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(deepClone);
+  const out = {};
+  for (const key in obj) out[key] = deepClone(obj[key]);
+  return out;
+}`,
+    test: async (fn)=>{
+      const input={a:1,b:{c:2,d:[3,4]}};
+      let out;
+      try{ out=fn(input); }catch(e){ return {pass:false,message:'Error: '+e.message}; }
+      if(!out||typeof out!=='object') return {pass:false,message:'Expected an object to be returned.'};
+      out.b.c=999;
+      const ok=input.b.c===2;
+      return {pass:ok,message:ok?'Passed — nested object was cloned, not referenced.':'Mutating the clone also changed the original — the nested object is not being cloned.'};
+    }
+  }
+];
+
+// ── STATE ──
+// solved[i] = true/false for the 34 days before today; solvedToday is separate
+// since it can flip live when the user passes the run above.
+const solvedHistory=[
+  true,true,true,false,true,true,true,true,true,false,
+  true,true,true,true,true,true,false,true,true,true,
+  true,true,true,true,true,true,true,true,true,true,
+  true,true,true,true
+];
+let solvedToday=false;
+let currentChallenge=challenges[0];
+
+function buildCalendarDates(){
+  const days=[];
+  const today=new Date();
+  for(let i=34;i>=0;i--){
+    const d=new Date(today);
+    d.setDate(d.getDate()-i);
+    days.push(d);
+  }
+  return days;
+}
+const calendarDates=buildCalendarDates();
+
+function renderCalendar(){
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+  const allSolved=[...solvedHistory,solvedToday];
+  calendarDates.forEach((d,i)=>{
+    const isToday=i===calendarDates.length-1;
+    const cell=document.createElement('div');
+    cell.className='cal-day'+(allSolved[i]?' solved':'')+(isToday?' today':'');
+    cell.title=d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+(allSolved[i]?' — solved':isToday?' — today':' — missed');
+    grid.appendChild(cell);
+  });
+  const solvedCount=allSolved.filter(Boolean).length;
+  document.getElementById('statSolved').textContent=solvedCount;
+  document.getElementById('statRate').textContent=Math.round(solvedCount/allSolved.length*100)+'%';
+
+  // current streak = consecutive solved days ending today (or yesterday if today not solved yet)
+  let streak=0;
+  for(let i=allSolved.length-1;i>=0;i--){
+    if(allSolved[i]) streak++; else break;
+  }
+  document.getElementById('statStreak').textContent=streak;
+  document.getElementById('streakCount').textContent=streak;
+}
+
+function renderArchive(){
+  const list=document.getElementById('archiveList');
+  list.innerHTML='';
+  challenges.forEach((c,idx)=>{
+    const item=document.createElement('div');
+    item.className='archive-item'+(c===currentChallenge?' active':'');
+    item.onclick=()=>loadChallenge(idx);
+    item.innerHTML=`
+      <div class="archive-day${c.today?'':' solved'}">${c.today?'⚡':'✓'}</div>
+      <div class="archive-info">
+        <div class="a-title">${c.title}</div>
+        <div class="a-meta">Day ${c.day} · ${c.diff}</div>
+      </div>`;
+    list.appendChild(item);
+  });
+}
+
+function loadChallenge(idx){
+  currentChallenge=challenges[idx];
+  document.getElementById('probLang').textContent=currentChallenge.lang;
+  const diffPill=document.getElementById('probDiff');
+  diffPill.textContent=currentChallenge.diff;
+  diffPill.className='pill '+currentChallenge.diffClass;
+  document.getElementById('probTitle').textContent=currentChallenge.title;
+  document.getElementById('probDesc').textContent=currentChallenge.desc;
+  document.getElementById('probDay').textContent='⚡ Day '+currentChallenge.day+(currentChallenge.today?' (Today)':'');
+  document.getElementById('codeEditor').value=currentChallenge.starter;
+  setOutput('idle','Write your solution, then hit "Run Tests".');
+  document.getElementById('hintBox').classList.remove('show');
+  document.getElementById('solutionBox').classList.remove('show');
+  renderArchive();
+}
+
+function resetCode(){
+  document.getElementById('codeEditor').value=currentChallenge.starter;
+  setOutput('idle','Editor reset to the starter code.');
+}
+
+function toggleHint(){
+  const box=document.getElementById('hintBox');
+  box.innerHTML='💡 <strong>Hint:</strong> '+currentChallenge.hint;
+  box.classList.toggle('show');
+  document.getElementById('solutionBox').classList.remove('show');
+}
+
+function toggleSolution(){
+  const box=document.getElementById('solutionBox');
+  box.innerHTML='<strong>Reference solution:</strong><pre class="sol-code">'+currentChallenge.solution.replace(/</g,'&lt;')+'</pre>';
+  box.classList.toggle('show');
+  document.getElementById('hintBox').classList.remove('show');
+}
+
+function setOutput(state,text){
+  const out=document.getElementById('output');
+  out.className='output '+state;
+  document.getElementById('outSpin').style.display=state==='loading'?'inline-block':'none';
+  document.getElementById('outText').textContent=text;
+}
+
+async function runTests(){
+  const runBtn=document.getElementById('runBtn');
+  runBtn.disabled=true;
+  setOutput('loading','Running tests…');
+  const code=document.getElementById('codeEditor').value;
+  let fn;
+  try{
+    fn=new Function(code+`\nreturn ${currentChallenge.entry};`)();
+    if(typeof fn!=='function') throw new Error(`No function named "${currentChallenge.entry}" was found.`);
+  }catch(e){
+    setOutput('fail','✕ '+e.message);
+    runBtn.disabled=false;
+    return;
+  }
+  try{
+    const result=await currentChallenge.test(fn);
+    if(result.pass){
+      setOutput('pass','✓ '+result.message);
+      if(currentChallenge.today && !solvedToday){
+        solvedToday=true;
+        renderCalendar();
+        toast('🔥 Streak updated — nice work!');
+      }
+    }else{
+      setOutput('fail','✕ '+result.message);
+    }
+  }catch(e){
+    setOutput('fail','✕ Runtime error: '+e.message);
+  }
+  runBtn.disabled=false;
+}
+
+// ── INIT ──
+loadChallenge(0);
+renderCalendar();
+</script>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DevPath — Find Your Developer Path</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.8);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* HERO */
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;max-width:1200px;margin:0 auto;padding:5rem 2rem 4rem}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--blue);border:1px solid rgba(79,126,255,.25);border-radius:99px;padding:4px 12px;margin-bottom:1.2rem}
+.hero-tag .blink{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero h1{font-family:'Space Grotesk',sans-serif;font-size:3rem;font-weight:700;line-height:1.12;letter-spacing:-.025em;margin-bottom:1.1rem}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.hero p{color:var(--muted);font-size:1rem;line-height:1.7;margin-bottom:2rem;max-width:480px}
+.cta-row{display:flex;gap:.75rem;flex-wrap:wrap}
+.btn-primary{background:var(--blue);color:#fff;font-weight:600;font-size:.9rem;padding:.65rem 1.5rem;border-radius:var(--r);border:none;cursor:pointer;text-decoration:none;transition:filter .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary:hover{filter:brightness(1.15)}
+.btn-ghost{background:transparent;color:var(--text);font-size:.9rem;font-weight:500;padding:.65rem 1.5rem;border-radius:var(--r);border:1px solid var(--border2);text-decoration:none;transition:border-color .2s,background .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-ghost:hover{border-color:var(--blue);background:rgba(79,126,255,.07)}
+
+/* PATH FINDER CARD (right side of hero) */
+.finder-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem;position:relative;overflow:hidden}
+.finder-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 20%,rgba(79,126,255,.06) 0%,transparent 60%);pointer-events:none}
+.finder-label{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.role-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem}
+.chip{padding:.35rem .85rem;border-radius:99px;border:1px solid var(--border);background:var(--surface);font-size:.8rem;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s;user-select:none}
+.chip:hover{border-color:var(--blue);color:var(--text)}
+.chip.active{background:rgba(79,126,255,.15);border-color:rgba(79,126,255,.5);color:var(--blue)}
+.path-result{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;min-height:120px;transition:all .3s}
+.path-result .pr-title{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;margin-bottom:.5rem}
+.path-steps{display:flex;flex-direction:column;gap:.4rem;margin-top:.6rem}
+.path-step{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted)}
+.path-step .ps-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.path-step.done .ps-dot{background:var(--mint)}
+.path-step.active .ps-dot{background:var(--blue);box-shadow:0 0 6px var(--blue)}
+.path-step.todo .ps-dot{background:var(--dim)}
+.path-step.done{color:var(--mint)}
+.path-step.active{color:var(--text)}
+
+/* STATS STRIP */
+.stats-strip{border-top:1px solid var(--border);border-bottom:1px solid var(--border);background:var(--bg2);display:flex;justify-content:center}
+.stat{flex:1;min-width:140px;max-width:220px;padding:1.25rem 1.5rem;text-align:center;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;color:var(--text)}
+.stat-n span{color:var(--blue)}
+.stat-l{font-size:.75rem;color:var(--muted);margin-top:2px}
+
+/* MAIN */
+.main{max-width:1200px;margin:0 auto;padding:3.5rem 2rem 5rem}
+
+/* SECTION HEADING */
+.sh{display:flex;align-items:center;gap:10px;margin-bottom:1.25rem}
+.sh h2{font-family:'Space Grotesk',sans-serif;font-size:1.15rem;font-weight:600}
+.sh-tag{font-size:.68rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:3px 8px;border-radius:4px}
+.sh-line{flex:1;height:1px;background:var(--border)}
+
+/* DAILY CHALLENGE */
+.challenge-banner{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.75rem;display:flex;align-items:center;gap:1.5rem;margin-bottom:3rem;position:relative;overflow:hidden}
+.challenge-banner::after{content:'';position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.08) 0%,transparent 70%)}
+.ch-icon{width:52px;height:52px;border-radius:12px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.2);display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.ch-content{flex:1}
+.ch-eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);margin-bottom:.25rem}
+.ch-title{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;margin-bottom:.25rem}
+.ch-desc{font-size:.82rem;color:var(--muted)}
+.ch-meta{display:flex;align-items:center;gap:1rem;margin-top:.6rem}
+.ch-pill{font-size:.72rem;font-weight:500;padding:3px 10px;border-radius:99px;background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+.ch-stat{font-size:.75rem;color:var(--muted)}
+.ch-btn{background:var(--amber);color:#1a0e00;font-weight:700;font-size:.82rem;padding:.5rem 1.1rem;border-radius:8px;border:none;cursor:pointer;flex-shrink:0;transition:filter .2s;text-decoration:none}
+.ch-btn:hover{filter:brightness(1.1)}
+
+/* ROADMAP GRID */
+.rg{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:2.5rem}
+.rc{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.9rem 1.1rem;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:10px;transition:background .2s,border-color .2s,transform .15s;position:relative}
+.rc:hover{background:var(--card2);border-color:var(--border2);transform:translateY(-2px)}
+.rc-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0}
+.rc-name{font-size:.87rem;font-weight:500}
+.rc-sub{font-size:.7rem;color:var(--muted);margin-top:1px}
+.rc-badge{font-size:.6rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 6px;border-radius:4px;margin-left:5px;vertical-align:middle}
+.badge-new{background:rgba(16,185,129,.1);color:var(--mint);border:1px solid rgba(16,185,129,.2)}
+.badge-hot{background:rgba(244,63,94,.1);color:var(--rose);border:1px solid rgba(244,63,94,.2)}
+.badge-ai{background:rgba(139,92,246,.1);color:var(--violet);border:1px solid rgba(139,92,246,.2)}
+.rc-progress{position:absolute;bottom:0;left:0;height:2px;border-radius:0 0 var(--r) var(--r);background:linear-gradient(90deg,var(--blue),var(--violet));transition:width .4s}
+
+/* LEARNING FEED */
+.feed-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:2.5rem}
+.feed-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1rem 1.2rem;transition:border-color .2s}
+.feed-card:hover{border-color:var(--border2)}
+.fc-meta{display:flex;align-items:center;gap:8px;margin-bottom:.6rem}
+.fc-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:700;flex-shrink:0}
+.fc-user{font-size:.78rem;font-weight:500}
+.fc-time{font-size:.72rem;color:var(--muted);margin-left:auto}
+.fc-text{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:.75rem}
+.fc-text strong{color:var(--text);font-weight:500}
+.fc-tags{display:flex;gap:.4rem;flex-wrap:wrap}
+.fc-tag{font-size:.7rem;padding:2px 8px;border-radius:4px;background:var(--surface);color:var(--muted);border:1px solid var(--border)}
+.fc-actions{display:flex;align-items:center;gap:1rem;margin-top:.75rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.fc-action{font-size:.75rem;color:var(--muted);display:flex;align-items:center;gap:5px;cursor:pointer;transition:color .2s;background:none;border:none}
+.fc-action:hover{color:var(--text)}
+.fc-action svg{width:13px;height:13px}
+
+/* SKILL GRAPH SECTION */
+.graph-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:3rem;position:relative;overflow:hidden}
+.gs-inner{display:grid;grid-template-columns:1fr 320px;gap:2rem;align-items:start}
+#skillCanvas{width:100%;height:340px;display:block}
+.gs-panel{}
+.gs-panel h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;margin-bottom:.35rem}
+.gs-panel p{font-size:.82rem;color:var(--muted);line-height:1.6;margin-bottom:1rem}
+.gs-legend{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem}
+.gs-leg-item{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted)}
+.gs-leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.skill-info{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.85rem;min-height:80px}
+.si-name{font-family:'Space Grotesk',sans-serif;font-size:.9rem;font-weight:600;margin-bottom:.25rem}
+.si-desc{font-size:.78rem;color:var(--muted);line-height:1.5}
+.si-links{display:flex;gap:.5rem;margin-top:.6rem;flex-wrap:wrap}
+.si-link{font-size:.72rem;padding:3px 9px;border-radius:5px;background:rgba(79,126,255,.1);color:var(--blue);border:1px solid rgba(79,126,255,.2);text-decoration:none;cursor:pointer}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-bottom:3rem}
+.feat{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.feat-ico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-bottom:.85rem}
+.feat h3{font-family:'Space Grotesk',sans-serif;font-size:.92rem;font-weight:600;margin-bottom:.4rem}
+.feat p{font-size:.8rem;color:var(--muted);line-height:1.65}
+
+/* CAREER MATCH */
+.career-match{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:2rem;margin-bottom:3rem}
+.cm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.75rem;margin-top:1.25rem}
+.cm-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1rem;cursor:pointer;transition:border-color .2s,background .2s;text-decoration:none;color:var(--text)}
+.cm-card:hover{border-color:var(--blue);background:rgba(79,126,255,.04)}
+.cm-role{font-size:.85rem;font-weight:500;margin-bottom:.3rem}
+.cm-sal{font-size:.78rem;color:var(--mint);font-weight:600}
+.cm-demand{font-size:.7rem;color:var(--muted);margin-top:.2rem}
+.cm-bar-wrap{margin-top:.6rem;height:4px;background:var(--dim);border-radius:2px}
+.cm-bar{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--teal))}
+
+/* TABS */
+.tabs{display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.tab{padding:.35rem .9rem;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+.tab:hover{border-color:var(--border2);color:var(--text)}
+.tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.35);color:var(--blue)}
+
+/* SEARCH */
+.search-row{display:flex;gap:.75rem;align-items:center;margin-bottom:2rem}
+.search-wrap{position:relative;flex:1;max-width:480px}
+.search-wrap input{width:100%;background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:.65rem 1rem .65rem 2.5rem;color:var(--text);font-size:.9rem;outline:none;transition:border-color .2s;font-family:'Inter',sans-serif}
+.search-wrap input::placeholder{color:var(--dim)}
+.search-wrap input:focus{border-color:var(--blue)}
+.search-ic{position:absolute;left:.8rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;width:16px;height:16px}
+
+/* CTA */
+.cta-big{background:linear-gradient(135deg,rgba(79,126,255,.1),rgba(139,92,246,.07));border:1px solid rgba(79,126,255,.2);border-radius:16px;padding:3rem 2.5rem;text-align:center;margin:2rem 0}
+.cta-big h2{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;margin-bottom:.75rem}
+.cta-big p{color:var(--muted);margin-bottom:1.75rem}
+.cta-row2{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+
+/* FOOTER */
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+/* TOAST */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .finder-card{display:none}
+  .gs-inner{grid-template-columns:1fr}
+  .feed-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  nav{padding:0 1rem}
+  .nav-r a:not(.btn-nav){display:none}
+  .hero{padding:3rem 1.25rem 2.5rem}
+  .main{padding:2rem 1.25rem 4rem}
+  .challenge-banner{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="4" cy="4" r="2" fill="white" opacity=".9"/>
+        <circle cx="12" cy="4" r="2" fill="white" opacity=".5"/>
+        <circle cx="8" cy="12" r="2" fill="white" opacity=".9"/>
+        <line x1="4" y1="4" x2="12" y2="4" stroke="white" stroke-width="1.2" opacity=".4"/>
+        <line x1="4" y1="4" x2="8" y2="12" stroke="white" stroke-width="1.2" opacity=".4"/>
+        <line x1="12" y1="4" x2="8" y2="12" stroke="white" stroke-width="1.2" opacity=".4"/>
+      </svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="#explore">Roadmaps</a>
+    <a href="#graph">Skill Graph</a>
+    <a href="#community">Community</a>
+    <a href="daily-challenge.html">Challenges</a>
+    <a href="signup.html" class="btn-nav">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div>
+    <div class="hero-tag"><span class="blink"></span> Open Source · Community Driven</div>
+    <h1>Don't just learn.<br/><em>Navigate</em> your<br/>developer journey.</h1>
+    <p>Structured roadmaps, a live skill graph, daily challenges, and a community that grows with you. Pick your destination — we'll map the route.</p>
+    <div class="cta-row">
+      <a href="#finder" class="btn-primary">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        Find My Path
+      </a>
+      <a href="#graph" class="btn-ghost">
+        <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" stroke-width="2" d="M8 12h8M12 8v8"/></svg>
+        Explore Skill Graph
+      </a>
+    </div>
+  </div>
+
+  <!-- PATH FINDER -->
+  <div class="finder-card" id="finder">
+    <div class="finder-label">✦ Path Finder — Where are you now?</div>
+    <div class="role-chips" id="roleChips">
+      <span class="chip" data-role="beginner">Complete Beginner</span>
+      <span class="chip" data-role="frontend">Frontend Dev</span>
+      <span class="chip" data-role="backend">Backend Dev</span>
+      <span class="chip" data-role="designer">Designer</span>
+      <span class="chip" data-role="student">CS Student</span>
+      <span class="chip" data-role="sysadmin">Sysadmin</span>
+    </div>
+    <div class="finder-label" style="margin-top:.25rem">Where do you want to go?</div>
+    <div class="role-chips" id="goalChips">
+      <span class="chip" data-goal="fullstack">Full Stack</span>
+      <span class="chip" data-goal="devops">DevOps/SRE</span>
+      <span class="chip" data-goal="ai">AI Engineer</span>
+      <span class="chip" data-goal="mobile">Mobile Developer</span>
+      <span class="chip" data-goal="security">Security</span>
+    </div>
+    <div class="path-result" id="pathResult">
+      <div style="color:var(--muted);font-size:.82rem;display:flex;align-items:center;gap:8px;height:100%;min-height:90px">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        Select your current role and goal above to see a personalized roadmap.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat"><div class="stat-n">50<span>+</span></div><div class="stat-l">Curated Roadmaps</div></div>
+  <div class="stat"><div class="stat-n">2.8<span>M</span></div><div class="stat-l">Learners</div></div>
+  <div class="stat"><div class="stat-n">358<span>K</span></div><div class="stat-l">GitHub Stars</div></div>
+  <div class="stat"><div class="stat-n">1.2<span>M</span></div><div class="stat-l">Paths Completed</div></div>
+</div>
+
+<main class="main">
+
+  <!-- DAILY CHALLENGE -->
+  <div class="challenge-banner" id="challenge">
+    <div class="ch-icon">⚡</div>
+    <div class="ch-content">
+      <div class="ch-eyebrow">Daily Challenge · Day 247</div>
+      <div class="ch-title">Implement a debounce function from scratch</div>
+      <div class="ch-desc">Write a debounce utility in JavaScript without using any libraries. Test it with a search input simulation.</div>
+      <div class="ch-meta">
+        <span class="ch-pill">JavaScript</span>
+        <span class="ch-pill" style="background:rgba(16,185,129,.1);color:var(--mint);border-color:rgba(16,185,129,.2)">Intermediate</span>
+        <span class="ch-stat">⏱ ~25 min</span>
+        <span class="ch-stat">👥 3,841 solving today</span>
+      </div>
+    </div>
+    <a href="daily-challenge.html" class="ch-btn">Accept Challenge →</a>
+  </div>
+
+  <!-- ROADMAP GRID -->
+  <section id="explore">
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg class="search-ic" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-linecap="round" stroke-width="2"/></svg>
+        <input type="text" id="searchInput" placeholder="Search roadmaps, skills, topics…"/>
+      </div>
+    </div>
+    <div class="tabs" id="tabRow">
+      <button class="tab active" data-cat="all">All</button>
+      <button class="tab" data-cat="role">Role-based</button>
+      <button class="tab" data-cat="skill">Skill-based</button>
+      <button class="tab" data-cat="best">Best Practices</button>
+    </div>
+
+    <!-- ROLE-BASED -->
+    <div data-section="role">
+      <div class="sh"><h2>Role-based Roadmaps</h2><span class="sh-tag" style="background:rgba(79,126,255,.1);color:var(--blue)">Career paths</span><div class="sh-line"></div></div>
+      <div class="rg" id="roleGrid">
+        <a href="roadmap-frontend.html" class="rc" data-tags="frontend html css javascript ui"><div class="rc-icon" style="background:rgba(79,126,255,.1)">🖥️</div><div><div class="rc-name">Frontend Dev</div><div class="rc-sub">HTML → CSS → JS → React</div></div><div class="rc-progress" style="width:68%"></div></a>
+        <a href="roadmap-backend.html" class="rc" data-tags="backend api database server"><div class="rc-icon" style="background:rgba(139,92,246,.1)">⚙️</div><div><div class="rc-name">Backend Dev</div><div class="rc-sub">APIs · DBs · Architecture</div></div></a>
+        <a href="roadmap-fullstack.html" class="rc" data-tags="fullstack frontend backend"><div class="rc-icon" style="background:rgba(45,212,191,.1)">🔁</div><div><div class="rc-name">Full Stack</div><div class="rc-sub">End-to-end development</div></div></a>
+        <a href="devops-engineer.html" class="rc" data-tags="devops docker kubernetes cloud cicd"><div class="rc-icon" style="background:rgba(245,158,11,.1)">🛠️</div><div><div class="rc-name">DevOps Engineer</div><div class="rc-sub">CI/CD · Docker · K8s</div></div></a>
+        <a href="roadmap-ai-engineer.html" class="rc" data-tags="ai llm machine learning agents"><div class="rc-icon" style="background:rgba(139,92,246,.1)">🤖</div><div><div class="rc-name">AI Engineer<span class="rc-badge badge-ai">AI</span></div><div class="rc-sub">LLMs · RAG · Agents</div></div></a>
+        <a href="roadmap-data-analyst.html" class="rc" data-tags="data sql python visualization analytics"><div class="rc-icon" style="background:rgba(16,185,129,.1)">📊</div><div><div class="rc-name">Data Analyst</div><div class="rc-sub">SQL · Python · Charts</div></div></a>
+        <a href="roadmap-machine-learning.html" class="rc" data-tags="machine learning ml deep learning python"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🧠</div><div><div class="rc-name">ML Engineer<span class="rc-badge badge-hot">Hot</span></div><div class="rc-sub">Models · MLOps · Deploy</div></div></a>
+        <a href="roadmap-cyber-security.html" class="rc" data-tags="security cybersecurity pentesting"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🔐</div><div><div class="rc-name">Cyber Security</div><div class="rc-sub">Pen testing · OWASP · CTF</div></div></a>
+        <a href="roadmap-android.html" class="rc" data-tags="android mobile kotlin java"><div class="rc-icon" style="background:rgba(16,185,129,.1)">📱</div><div><div class="rc-name">Android Dev</div><div class="rc-sub">Kotlin · Jetpack Compose</div></div></a>
+        <a href="roadmap-ios.html" class="rc" data-tags="ios apple swift swiftui mobile"><div class="rc-icon" style="background:rgba(79,126,255,.1)">🍎</div><div><div class="rc-name">iOS Developer</div><div class="rc-sub">Swift · SwiftUI · UIKit</div></div></a>
+        <a href="ux-design-roadmap.html" class="rc" data-tags="ux ui design product figma"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🎨</div><div><div class="rc-name">UX Designer<span class="rc-badge badge-new">New</span></div><div class="rc-sub">Research · Figma · Systems</div></div></a>
+        <a href="blockchain-roadmap.html" class="rc" data-tags="blockchain web3 solidity ethereum"><div class="rc-icon" style="background:rgba(245,158,11,.1)">⛓️</div><div><div class="rc-name">Blockchain Dev</div><div class="rc-sub">Solidity · Web3 · DeFi</div></div></a>
+      </div>
+    </div>
+
+    <!-- SKILL-BASED -->
+    <div data-section="skill">
+      <div class="sh" style="margin-top:2.5rem"><h2>Skill-based Roadmaps</h2><span class="sh-tag" style="background:rgba(45,212,191,.1);color:var(--teal)">Deep dives</span><div class="sh-line"></div></div>
+      <div class="rg">
+        <a href="python-roadmap.html" class="rc" data-tags="python programming scripting"><div class="rc-icon" style="background:rgba(245,158,11,.1)">🐍</div><div><div class="rc-name">Python</div><div class="rc-sub">Basics to advanced</div></div></a>
+        <a href="React_Developer.html" class="rc" data-tags="react javascript frontend ui"><div class="rc-icon" style="background:rgba(79,126,255,.1)">⚛️</div><div><div class="rc-name">React</div><div class="rc-sub">Hooks · State · Patterns</div></div></a>
+        <a href="JavaScript_Developer.html" class="rc" data-tags="javascript js dom async"><div class="rc-icon" style="background:rgba(245,158,11,.1)">🟨</div><div><div class="rc-name">JavaScript</div><div class="rc-sub">ES6+ · Async · DOM</div></div></a>
+        <a href="roadmap-typescript.html" class="rc" data-tags="typescript types static"><div class="rc-icon" style="background:rgba(79,126,255,.1)">🔷</div><div><div class="rc-name">TypeScript</div><div class="rc-sub">Types · Generics · Tools</div></div></a>
+        <a href="Docker.html" class="rc" data-tags="docker containers devops"><div class="rc-icon" style="background:rgba(79,126,255,.1)">🐳</div><div><div class="rc-name">Docker</div><div class="rc-sub">Images · Compose · Deploy</div></div></a>
+        <a href="roadmap-kubernetes.html" class="rc" data-tags="kubernetes k8s orchestration cloud"><div class="rc-icon" style="background:rgba(79,126,255,.1)">☸️</div><div><div class="rc-name">Kubernetes<span class="rc-badge badge-new">New</span></div><div class="rc-sub">Pods · Helm · Services</div></div></a>
+        <a href="roadmap-rust.html" class="rc" data-tags="rust systems performance low level"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🦀</div><div><div class="rc-name">Rust</div><div class="rc-sub">Ownership · Systems</div></div></a>
+        <a href="roadmap-golang.html" class="rc" data-tags="golang go backend concurrency"><div class="rc-icon" style="background:rgba(45,212,191,.1)">🐹</div><div><div class="rc-name">Go (Golang)</div><div class="rc-sub">Concurrency · APIs · CLI</div></div></a>
+        <a href="sql.html" class="rc" data-tags="sql database query relational"><div class="rc-icon" style="background:rgba(139,92,246,.1)">🗃️</div><div><div class="rc-name">SQL</div><div class="rc-sub">Queries · Joins · Indexing</div></div></a>
+        <a href="roadmap-nodejs.html" class="rc" data-tags="nodejs node javascript backend runtime"><div class="rc-icon" style="background:rgba(16,185,129,.1)">🌿</div><div><div class="rc-name">Node.js</div><div class="rc-sub">Runtime · Express · APIs</div></div></a>
+        <a href="aws.html" class="rc" data-tags="aws cloud amazon infrastructure"><div class="rc-icon" style="background:rgba(245,158,11,.1)">☁️</div><div><div class="rc-name">AWS<span class="rc-badge badge-hot">Hot</span></div><div class="rc-sub">Core services · Arch</div></div></a>
+        <a href="roadmap-system.html" class="rc" data-tags="system design architecture distributed scale"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🧩</div><div><div class="rc-name">System Design</div><div class="rc-sub">Scale · CAP · Patterns</div></div></a>
+      </div>
+    </div>
+
+    <!-- BEST PRACTICES -->
+    <div data-section="best">
+      <div class="sh" style="margin-top:2.5rem"><h2>Best Practices</h2><span class="sh-tag" style="background:rgba(16,185,129,.1);color:var(--mint)">Level up</span><div class="sh-line"></div></div>
+      <div class="rg">
+        <a href="security.html" class="rc" data-tags="api security auth owasp"><div class="rc-icon" style="background:rgba(244,63,94,.1)">🔒</div><div><div class="rc-name">API Security</div><div class="rc-sub">Auth · OWASP · Limits</div></div></a>
+        <a href="frontentpf.html" class="rc" data-tags="performance frontend web vitals"><div class="rc-icon" style="background:rgba(79,126,255,.1)">🚀</div><div><div class="rc-name">Frontend Perf</div><div class="rc-sub">Core Web Vitals · Cache</div></div></a>
+        <a href="codereview.html" class="rc" data-tags="code review git collaboration"><div class="rc-icon" style="background:rgba(139,92,246,.1)">🔍</div><div><div class="rc-name">Code Review</div><div class="rc-sub">PR etiquette · Patterns</div></div></a>
+        <a href="backendbestperformance.html" class="rc" data-tags="testing unit integration tdd"><div class="rc-icon" style="background:rgba(16,185,129,.1)">🧪</div><div><div class="rc-name">Backend Performance<span class="rc-badge badge-new">New</span></div><div class="rc-sub">Unit · Integration · E2E</div></div></a>
+        <a href="awsbestpratice.html" class="rc" data-tags="aws cloud best practices security"><div class="rc-icon" style="background:rgba(245,158,11,.1)">☁️</div><div><div class="rc-name">AWS Best Practices</div><div class="rc-sub">Security · Cost · Scale</div></div></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- INTERACTIVE SKILL GRAPH -->
+  <section id="graph" style="margin-top:1rem">
+    <div class="sh"><h2>Interactive Skill Graph</h2><span class="sh-tag" style="background:rgba(139,92,246,.1);color:var(--violet)">Live · Explorable</span><div class="sh-line"></div></div>
+    <div class="graph-section">
+      <div class="gs-inner">
+        <canvas id="skillCanvas"></canvas>
+        <div class="gs-panel">
+          <h3>Explore the skill network</h3>
+          <p>Click any node to see how skills connect. Hover to preview. The graph shows dependencies — mastering linked skills unlocks new paths.</p>
+          <div class="gs-legend">
+            <div class="gs-leg-item"><div class="gs-leg-dot" style="background:#4F7EFF"></div>Core languages</div>
+            <div class="gs-leg-item"><div class="gs-leg-dot" style="background:#8B5CF6"></div>Frameworks</div>
+            <div class="gs-leg-item"><div class="gs-leg-dot" style="background:#2DD4BF"></div>Infrastructure</div>
+            <div class="gs-leg-item"><div class="gs-leg-dot" style="background:#F59E0B"></div>Concepts</div>
+            <div class="gs-leg-item"><div class="gs-leg-dot" style="background:#10B981"></div>Specializations</div>
+          </div>
+          <div class="skill-info" id="skillInfo">
+            <div style="color:var(--muted);font-size:.8rem">Click a node to learn more about that skill.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- FEATURES -->
+  <div class="sh" style="margin-top:1rem"><h2>Why DevPath?</h2><div class="sh-line"></div></div>
+  <div class="feat-grid" id="community">
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(79,126,255,.1)">🗺️</div>
+      <h3>Visual Roadmaps</h3>
+      <p>Node-based interactive maps showing exactly what to learn and why — not just a list.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(245,158,11,.1)">⚡</div>
+      <h3>Daily Challenges</h3>
+      <p>One curated coding challenge per day aligned to your current roadmap position. Build muscle memory.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(139,92,246,.1)">🔭</div>
+      <h3>Path Finder</h3>
+      <p>Tell us where you are and where you want to go — we generate a personalized learning bridge.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(16,185,129,.1)">👥</div>
+      <h3>Community Feed</h3>
+      <p>See what others are learning, celebrate wins, and stay accountable with a global cohort.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(45,212,191,.1)">🕸️</div>
+      <h3>Live Skill Graph</h3>
+      <p>A connected map of every skill and how they relate — see your knowledge as a network, not a checklist.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-ico" style="background:rgba(244,63,94,.1)">💼</div>
+      <h3>Career Outcomes</h3>
+      <p>Real salary data from learners who completed each roadmap. Know what you're working toward.</p>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta-big">
+    <h2>Your path is waiting.</h2>
+    <p>Join 2.8 million developers navigating their growth with DevPath. Free, forever, open source.</p>
+    <div class="cta-row2">
+      <a href="#finder" class="btn-primary">Start Free — Find My Path</a>
+      <a href="#" class="btn-ghost">
+        <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.09 3.29 9.4 7.86 10.92.57.1.78-.25.78-.55v-2.09c-3.19.69-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.33.95.1-.74.4-1.25.72-1.54-2.55-.29-5.23-1.27-5.23-5.67 0-1.25.45-2.27 1.18-3.07-.12-.29-.51-1.45.11-3.02 0 0 .96-.31 3.15 1.17A10.97 10.97 0 0112 6.84c.97.004 1.95.13 2.86.38 2.19-1.48 3.15-1.17 3.15-1.17.62 1.57.23 2.73.11 3.02.73.8 1.18 1.82 1.18 3.07 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.13v3.16c0 .3.2.65.79.54A11.52 11.52 0 0023.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>
+        Star on GitHub
+      </a>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="#">Roadmaps</a><a href="#">Challenges</a><a href="#">Community</a><a href="#">GitHub</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── TOAST ──
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── LIKE ──
+function likePost(btn){const s=btn.querySelector('span');if(!s)return;const n=parseInt(s.textContent);if(btn.dataset.liked){s.textContent=n-1;btn.style.color='';delete btn.dataset.liked}else{s.textContent=n+1;btn.style.color='#F43F5E';btn.dataset.liked='1';toast('❤️ Liked!')}}
+
+// ── PATH FINDER ──
+const paths={
+  'beginner+fullstack':{title:'Beginner → Full Stack',steps:[{s:'done',t:'HTML & CSS fundamentals'},{s:'done',t:'JavaScript basics'},{s:'active',t:'React (frontend framework)'},{s:'todo',t:'Node.js + Express (backend)'},{s:'todo',t:'PostgreSQL (database)'},{s:'todo',t:'Deployment & DevOps basics'}]},
+  'beginner+ai':{title:'Beginner → AI Engineer',steps:[{s:'done',t:'Python fundamentals'},{s:'active',t:'Data structures & algorithms'},{s:'todo',t:'ML basics (scikit-learn)'},{s:'todo',t:'Deep learning (PyTorch)'},{s:'todo',t:'LLMs & prompt engineering'},{s:'todo',t:'RAG & AI agents'}]},
+  'frontend+devops':{title:'Frontend Dev → DevOps/SRE',steps:[{s:'done',t:'Linux & shell scripting'},{s:'done',t:'Git & version control'},{s:'active',t:'Docker & containers'},{s:'todo',t:'CI/CD pipelines'},{s:'todo',t:'Kubernetes fundamentals'},{s:'todo',t:'Cloud platforms (AWS/GCP)'}]},
+  'frontend+ai':{title:'Frontend Dev → AI Engineer',steps:[{s:'done',t:'Python basics'},{s:'active',t:'ML fundamentals'},{s:'todo',t:'LLM API integration'},{s:'todo',t:'Vector DBs & RAG'},{s:'todo',t:'AI product UX patterns'},{s:'todo',t:'Deploy AI-powered apps'}]},
+  'backend+ai':{title:'Backend Dev → AI Engineer',steps:[{s:'done',t:'Python (if not already)'},{s:'active',t:'ML & data fundamentals'},{s:'todo',t:'LLM APIs & fine-tuning'},{s:'todo',t:'RAG architectures'},{s:'todo',t:'AI agents & tool use'},{s:'todo',t:'MLOps & model serving'}]},
+  'sysadmin+devops':{title:'Sysadmin → DevOps/SRE',steps:[{s:'done',t:'Linux & networking solid'},{s:'done',t:'Scripting (Bash/Python)'},{s:'active',t:'Docker & containerization'},{s:'todo',t:'Kubernetes & Helm'},{s:'todo',t:'Terraform / IaC'},{s:'todo',t:'Observability & SLOs'}]},
+  'student+fullstack':{title:'CS Student → Full Stack',steps:[{s:'done',t:'Leverage CS fundamentals'},{s:'active',t:'Modern JS & React'},{s:'todo',t:'Backend with Node or Go'},{s:'todo',t:'Databases & ORMs'},{s:'todo',t:'System design patterns'},{s:'todo',t:'Build & ship 3 projects'}]},
+  'default':{title:'Personalized Path',steps:[{s:'active',t:'Pick a starting role above'},{s:'todo',t:'Then select your goal'},{s:'todo',t:'Your path will appear here'}]}
+};
+let curRole=null,curGoal=null;
+document.getElementById('roleChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;document.querySelectorAll('#roleChips .chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');curRole=c.dataset.role;renderPath()});
+document.getElementById('goalChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;document.querySelectorAll('#goalChips .chip').forEach(x=>x.classList.remove('active'));c.classList.add('active');curGoal=c.dataset.goal;renderPath()});
+function renderPath(){
+  const key=curRole&&curGoal?`${curRole}+${curGoal}`:'default';
+  const p=paths[key]||paths['default'];
+  const pr=document.getElementById('pathResult');
+  pr.innerHTML=`<div class="pr-title">🗺️ ${p.title}</div><div class="path-steps">${p.steps.map(s=>`<div class="path-step ${s.s}"><div class="ps-dot"></div>${s.t}</div>`).join('')}</div>${curRole&&curGoal?`<a href="#explore" style="display:inline-block;margin-top:.85rem;font-size:.78rem;font-weight:600;color:var(--blue);text-decoration:none">View Full Roadmap →</a>`:''}`;
+}
+
+// ── TABS ──
+document.getElementById('tabRow').addEventListener('click',e=>{
+  const t=e.target.closest('.tab');if(!t)return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));t.classList.add('active');
+  const cat=t.dataset.cat;
+  document.querySelectorAll('[data-section]').forEach(s=>{s.style.display=(cat==='all'||s.dataset.section===cat)?'':'none'});
+});
+
+// ── SEARCH ──
+document.getElementById('searchInput').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  document.querySelectorAll('.rc').forEach(c=>{c.style.display=c.dataset.tags&&c.dataset.tags.includes(q)||c.textContent.toLowerCase().includes(q)?'':'none'});
+});
+
+// ── SKILL GRAPH ──
+const canvas=document.getElementById('skillCanvas');
+const ctx=canvas.getContext('2d');
+function resize(){canvas.width=canvas.offsetWidth*devicePixelRatio;canvas.height=canvas.offsetHeight*devicePixelRatio;ctx.scale(devicePixelRatio,devicePixelRatio);draw()}
+
+const skillData=[
+  {id:'js',label:'JavaScript',x:.12,y:.3,color:'#F59E0B',r:22,group:'lang',desc:'The language of the web. Essential for both frontend and backend (Node.js). Start here for web dev.',links:['HTML','Tutorials','MDN']},
+  {id:'python',label:'Python',x:.12,y:.7,color:'#4F7EFF',r:22,group:'lang',desc:'Dominant in data science, ML, scripting, and backend APIs. Readable syntax makes it beginner-friendly.',links:['Docs','PyPI','Tutorials']},
+  {id:'html',label:'HTML/CSS',x:.28,y:.15,color:'#F59E0B',r:16,group:'lang',desc:'The building blocks of every website. Learn HTML structure and CSS styling first.',links:['MDN','CSS Tricks']},
+  {id:'react',label:'React',x:.35,y:.35,color:'#8B5CF6',r:20,group:'framework',desc:'The most popular frontend framework. Component-based UI with hooks for state management.',links:['Docs','React Query','Patterns']},
+  {id:'node',label:'Node.js',x:.35,y:.55,color:'#8B5CF6',r:18,group:'framework',desc:'Run JavaScript on the server. Power APIs, microservices, and real-time apps.',links:['Docs','npm','Express']},
+  {id:'docker',label:'Docker',x:.55,y:.25,color:'#2DD4BF',r:18,group:'infra',desc:'Package apps into containers for consistent deployment across environments.',links:['Docs','Hub','Compose']},
+  {id:'postgres',label:'PostgreSQL',x:.55,y:.65,color:'#2DD4BF',r:16,group:'infra',desc:'The most advanced open-source relational database. Learn SQL fundamentals here.',links:['Docs','Tutorial','pgAdmin']},
+  {id:'aws',label:'AWS',x:.72,y:.35,color:'#2DD4BF',r:20,group:'infra',desc:'The leading cloud platform. EC2, S3, Lambda, RDS — the backbone of modern infrastructure.',links:['Docs','Free Tier','Certifications']},
+  {id:'k8s',label:'Kubernetes',x:.72,y:.15,color:'#2DD4BF',r:16,group:'infra',desc:'Orchestrate containers at scale. Complex but essential for production-grade DevOps.',links:['Docs','Play with K8s','Helm']},
+  {id:'sysd',label:'System Design',x:.88,y:.45,color:'#F59E0B',r:20,group:'concept',desc:'How to architect scalable, reliable distributed systems. CAP theorem, load balancing, caching.',links:['Primer','Grokking','Patterns']},
+  {id:'ml',label:'ML / AI',x:.72,y:.75,color:'#10B981',r:22,group:'special',desc:'Build models that learn from data. From scikit-learn basics to transformer architectures.',links:['Fast.ai','Papers','Hugging Face']},
+  {id:'security',label:'Security',x:.88,y:.2,color:'#10B981',r:16,group:'special',desc:'OWASP, pen testing, auth, encryption. Security skills apply to every role.',links:['OWASP','TryHackMe','CVEs']},
+  {id:'golang',label:'Go',x:.52,y:.45,color:'#4F7EFF',r:15,group:'lang',desc:'Fast, concurrent, great for cloud-native tools and microservices. Growing rapidly.',links:['Tour','Docs','Awesome Go']},
+];
+
+const edges=[
+  ['js','html'],['js','react'],['js','node'],['python','ml'],['python','postgres'],
+  ['react','sysd'],['node','docker'],['node','postgres'],['docker','k8s'],['docker','aws'],
+  ['k8s','aws'],['aws','sysd'],['postgres','sysd'],['ml','sysd'],['golang','docker'],
+  ['golang','aws'],['node','aws'],['security','aws'],['security','sysd'],
+];
+
+let hoveredNode=null,selectedNode=null,W,H;
+function gx(x){return x*W}function gy(y){return y*H}
+
+function draw(){
+  W=canvas.offsetWidth;H=canvas.offsetHeight;
+  ctx.clearRect(0,0,W,H);
+  // edges
+  edges.forEach(([a,b])=>{
+    const na=skillData.find(n=>n.id===a),nb=skillData.find(n=>n.id===b);
+    if(!na||!nb)return;
+    const active=selectedNode&&(selectedNode.id===a||selectedNode.id===b);
+    ctx.beginPath();ctx.moveTo(gx(na.x),gy(na.y));ctx.lineTo(gx(nb.x),gy(nb.y));
+    ctx.strokeStyle=active?'rgba(79,126,255,0.6)':'rgba(255,255,255,0.07)';
+    ctx.lineWidth=active?1.5:1;ctx.stroke();
+  });
+  // nodes
+  skillData.forEach(n=>{
+    const x=gx(n.x),y=gy(n.y),r=n.r;
+    const hovered=hoveredNode&&hoveredNode.id===n.id;
+    const selected=selectedNode&&selectedNode.id===n.id;
+    const connected=selectedNode&&edges.some(([a,b])=>(a===selectedNode.id&&b===n.id)||(b===selectedNode.id&&a===n.id));
+    const alpha=selectedNode&&!selected&&!connected?0.3:1;
+    ctx.globalAlpha=alpha;
+    // glow
+    if(selected||hovered){
+      ctx.beginPath();ctx.arc(x,y,r+6,0,Math.PI*2);
+      const g=ctx.createRadialGradient(x,y,r,x,y,r+8);
+      g.addColorStop(0,n.color+'55');g.addColorStop(1,'transparent');
+      ctx.fillStyle=g;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=n.color+'22';ctx.fill();
+    ctx.strokeStyle=selected?n.color:hovered?n.color+'cc':'rgba(255,255,255,0.15)';
+    ctx.lineWidth=selected?2:1;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,0.9)';
+    ctx.font=`${Math.max(10,r*0.52)}px Inter,sans-serif`;
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(n.label,x,y);
+    ctx.globalAlpha=1;
+  });
+}
+
+canvas.addEventListener('mousemove',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  hoveredNode=skillData.find(n=>Math.hypot(gx(n.x)-mx,gy(n.y)-my)<n.r)||null;
+  canvas.style.cursor=hoveredNode?'pointer':'default';
+  draw();
+});
+
+canvas.addEventListener('click',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left,my=e.clientY-rect.top;
+  const clicked=skillData.find(n=>Math.hypot(gx(n.x)-mx,gy(n.y)-my)<n.r)||null;
+  selectedNode=clicked===selectedNode?null:clicked;
+  draw();
+  const si=document.getElementById('skillInfo');
+  if(selectedNode){
+    si.innerHTML=`<div class="si-name">${selectedNode.label}</div><div class="si-desc">${selectedNode.desc}</div><div class="si-links">${selectedNode.links.map(l=>`<span class="si-link">${l}</span>`).join('')}</div>`;
+  } else {
+    si.innerHTML=`<div style="color:var(--muted);font-size:.8rem">Click a node to learn more about that skill.</div>`;
+  }
+});
+
+window.addEventListener('resize',resize);
+resize();
+</script>
+</body>
+</html>

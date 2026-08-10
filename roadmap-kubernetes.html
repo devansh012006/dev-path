@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Kubernetes Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider — for "or" choices */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node (pick one) */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Kubernetes</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">⎈</div>
+    <div class="rm-title">
+      <h1>Kubernetes</h1>
+      <p>Step by step guide to learning Kubernetes in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="k8s-prereqs" data-desc="Before touching a cluster, get comfortable with the building blocks Kubernetes sits on top of: Linux, containers, and YAML.">1. Prerequisites</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Foundations</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="linux-basics-k8s" data-desc="Kubernetes nodes run Linux — processes, filesystems, permissions, and basic networking are assumed knowledge.">Linux Basics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="containers-docker" data-desc="Understand how images, containers, volumes, and container networking work before orchestrating them at scale.">Containers & Docker <span class="dot"></span></div>
+        <div class="rm-chip" data-id="yaml-syntax" data-desc="Nearly every Kubernetes object is defined declaratively in YAML — indentation, lists, and maps need to be second nature.">YAML Syntax <span class="dot"></span></div>
+        <div class="rm-chip" data-id="networking-basics-k8s" data-desc="IP addressing, DNS, and load balancing concepts underpin how Kubernetes routes traffic between components.">Networking Basics <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="core-concepts" data-desc="Learn why Kubernetes exists and how its control plane and worker nodes cooperate to run your workloads." >2. Kubernetes Core Concepts</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Architecture</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="control-plane" data-desc="The control plane — API server, scheduler, controller manager, and etcd — holds and reconciles the cluster's desired state.">Control Plane <span class="dot"></span></div>
+        <div class="rm-chip" data-id="worker-nodes" data-desc="Worker nodes run the kubelet, a container runtime, and kube-proxy to actually execute and network your workloads.">Worker Nodes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="kubectl-basics" data-desc="kubectl is the primary CLI for talking to a cluster — get, describe, logs, and exec are used constantly.">kubectl Basics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="kubernetes-objects" data-desc="Objects are persistent records of intent in the cluster, expressed as YAML manifests and stored in etcd.">Kubernetes Objects <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core Objects</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="pods" data-desc="Pods are the smallest deployable unit — one or more containers that share networking and storage.">Pods <span class="dot"></span></div>
+        <div class="rm-chip" data-id="replicasets" data-desc="ReplicaSets keep a specified number of identical Pod replicas running at all times.">ReplicaSets <span class="dot"></span></div>
+        <div class="rm-chip" data-id="deployments" data-desc="Deployments manage ReplicaSets declaratively, enabling rolling updates and easy rollbacks for stateless apps.">Deployments <span class="dot"></span></div>
+        <div class="rm-chip" data-id="namespaces-labels" data-desc="Namespaces logically separate resources, while labels and selectors are how Kubernetes finds and groups them.">Namespaces & Labels <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-first-deploy" data-desc="Deploy a simple containerized app to a cluster and confirm you can inspect, scale, and roll it back with kubectl.">Checkpoint — First Deployment</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="networking-layer" data-desc="Learn how Kubernetes routes traffic between Pods, exposes services, and enforces network boundaries." >3. Kubernetes Networking</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Services & Traffic</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Networking</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="services" data-desc="Services (ClusterIP, NodePort, LoadBalancer) give a stable address to a changing set of Pods.">Services <span class="dot"></span></div>
+        <div class="rm-chip" data-id="ingress" data-desc="Ingress and Ingress Controllers route external HTTP/S traffic to services based on host and path rules.">Ingress & Controllers <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dns-k8s" data-desc="Kubernetes runs an internal DNS service so Pods and Services can find each other by name.">DNS in Kubernetes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="network-policies" data-desc="Network Policies control which Pods are allowed to talk to which, forming a basic network firewall.">Network Policies <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>CNI Plugins</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cni-calico" data-desc="Calico is a popular CNI plugin providing networking and network policy enforcement.">Calico <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cni-cilium" data-desc="Cilium uses eBPF to provide high-performance networking, observability, and security.">Cilium <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cni-flannel" data-desc="Flannel is a simple, lightweight overlay network commonly used for smaller clusters.">Flannel <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-networking" data-desc="Expose an app externally through Ingress and restrict its traffic with a Network Policy.">Checkpoint — Networking <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="storage-layer" data-desc="Learn how to persist data beyond a Pod's lifecycle and inject configuration into running workloads." >4. Storage & Data Management</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Volumes & Persistence</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="volumes" data-desc="Volumes attach storage to a Pod so data can survive container restarts within the Pod's lifetime.">Volumes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="pv-pvc" data-desc="Persistent Volumes and Persistent Volume Claims decouple storage provisioning from how Pods consume it.">PVs & PVCs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="storage-classes" data-desc="StorageClasses define how storage is dynamically provisioned on demand from an underlying provider.">Storage Classes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="stateful-storage" data-desc="Stateful workloads need stable, durable storage tied to a specific Pod identity across rescheduling.">Dynamic Provisioning <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Configuration & Secrets</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="configmaps" data-desc="ConfigMaps inject non-sensitive configuration data into Pods, decoupled from container images.">ConfigMaps <span class="dot"></span></div>
+        <div class="rm-chip" data-id="secrets-mgmt" data-desc="Secrets store and manage sensitive values like passwords and tokens, separate from application code.">Secrets Management <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-stateful" data-desc="Deploy a stateful application with persistent storage and externalized configuration that survives a restart.">Checkpoint — Stateful App <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="workload-layer" data-desc="Go beyond simple Deployments to run batch jobs, stateful apps, node-level agents, and scale automatically." >5. Workload Management</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Workload Types</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="jobs-cronjobs" data-desc="Jobs run Pods to completion for a task, while CronJobs schedule Jobs to run on a recurring basis.">Jobs & CronJobs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="statefulsets" data-desc="StatefulSets manage Pods that need stable identities, ordered deployment, and persistent storage.">StatefulSets <span class="dot"></span></div>
+        <div class="rm-chip" data-id="daemonsets" data-desc="DaemonSets ensure a copy of a Pod runs on every node, ideal for log collectors and node agents.">DaemonSets <span class="dot"></span></div>
+        <div class="rm-chip" data-id="pod-scheduling" data-desc="Taints, tolerations, and affinity rules control which nodes a Pod is allowed or preferred to run on.">Pod Scheduling <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Autoscaling</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="hpa" data-desc="The Horizontal Pod Autoscaler adjusts replica count automatically based on observed metrics like CPU.">Horizontal Pod Autoscaling <span class="dot"></span></div>
+        <div class="rm-chip" data-id="vpa" data-desc="The Vertical Pod Autoscaler adjusts a Pod's CPU and memory requests based on actual usage.">Vertical Pod Autoscaling <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cluster-autoscaler" data-desc="The Cluster Autoscaler adds or removes nodes automatically based on pending and idle capacity.">Cluster Autoscaler <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="security-layer" data-desc="Lock down who and what can do what in your cluster, from user permissions down to Pod-level constraints." >6. Security</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Access & Hardening</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Security</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="rbac" data-desc="Role-Based Access Control defines who can perform which actions on which resources in the cluster.">RBAC <span class="dot"></span></div>
+        <div class="rm-chip" data-id="service-accounts" data-desc="Service Accounts give Pods an identity to authenticate against the Kubernetes API and other services.">Service Accounts <span class="dot"></span></div>
+        <div class="rm-chip" data-id="pod-security-standards" data-desc="Pod Security Standards restrict privileged or risky Pod configurations at the namespace level.">Pod Security Standards <span class="dot"></span></div>
+        <div class="rm-chip" data-id="secrets-encryption" data-desc="Encrypting Secrets at rest in etcd prevents sensitive data from being exposed if the datastore is compromised.">Secrets Encryption <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-secure-cluster" data-desc="Apply RBAC roles, a restrictive Pod Security Standard, and a Network Policy to lock down a sample namespace.">Checkpoint — Secure Cluster</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="observability-layer" data-desc="Understand what's actually happening inside a running cluster — logs, metrics, dashboards, and audit trails." >7. Observability & Monitoring</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Metrics & Logs</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="logging-k8s" data-desc="Centralized logging collects container and cluster logs so issues can be diagnosed after the fact.">Logging <span class="dot"></span></div>
+        <div class="rm-chip" data-id="prometheus" data-desc="Prometheus scrapes and stores time-series metrics from cluster components and applications.">Prometheus <span class="dot"></span></div>
+        <div class="rm-chip" data-id="grafana" data-desc="Grafana turns collected metrics into dashboards for visualizing cluster and application health.">Grafana Dashboards <span class="dot"></span></div>
+        <div class="rm-chip" data-id="events-auditing" data-desc="Kubernetes Events and audit logs record what happened and who did it, useful for debugging and compliance.">Events & Auditing <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="gitops-layer" data-desc="Package and ship applications repeatably using templating tools and Git-driven deployment workflows." >8. Package Management & GitOps</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Package Manager</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="helm" data-desc="Helm packages Kubernetes manifests into reusable, versioned charts with templating and release management.">Helm</div>
+        <div class="rm-node" data-id="kustomize" data-desc="Kustomize layers environment-specific overlays on top of plain YAML without templating.">Kustomize</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>GitOps Tools</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="argocd" data-desc="Argo CD continuously syncs a cluster's actual state to the desired state declared in a Git repository.">Argo CD <span class="dot"></span></div>
+        <div class="rm-chip" data-id="fluxcd" data-desc="Flux CD is another GitOps operator that automates deployment based on changes to a Git repo.">Flux CD <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cicd-pipelines" data-desc="CI/CD pipelines build, test, and push new images that GitOps tools then deploy automatically.">CI/CD Pipelines <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-gitops" data-desc="Package an app as a Helm chart and deploy it through a GitOps workflow triggered by a Git commit.">Checkpoint — GitOps Deploy <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="advanced-layer" data-desc="Extend the platform itself and prepare for real production and certification-level responsibilities." >9. Advanced Topics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Platform & Scale</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="operators-crds" data-desc="Custom Resource Definitions and Operators extend the Kubernetes API to automate managing complex applications.">Operators & CRDs <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="service-mesh" data-desc="A service mesh like Istio or Linkerd adds traffic control, retries, and mTLS between services.">Service Mesh <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="multi-cluster" data-desc="Multi-cluster and federation strategies manage workloads spread across several clusters or regions.">Multi-Cluster Management <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cka-cert" data-desc="Certifications like CKA, CKAD, and CKS validate hands-on administration, development, and security skills.">CKA / CKAD / CKS Prep <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-k8s-mastered" data-desc="Achieve full-cycle mastery: deploy, network, secure, observe, and operate real workloads on Kubernetes.">Checkpoint — Kubernetes Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is Kubernetes?</h2>
+  <p>Kubernetes is an open-source container orchestration platform used to automate the deployment, scaling, management, and networking of containerized applications. It enables self-healing applications, efficient resource utilization, service discovery, and automated rollouts and rollbacks across cloud, on-prem, or hybrid environments.</p>
+  <p>Originally developed at Google and now maintained by the CNCF, Kubernetes has become the <strong>de facto standard</strong> for running containerized workloads at scale, coordinating everything from single-service apps to sprawling microservice architectures.</p>
+
+  <h2>What does working with Kubernetes actually involve?</h2>
+  <p>Day-to-day work spans the full lifecycle of a cluster — defining workloads as declarative YAML manifests, exposing them through Services and Ingress, attaching persistent storage, and keeping configuration and secrets separate from application code. Kubernetes then continuously reconciles the cluster's actual state against what you've declared.</p>
+  <p>Beyond deployment, engineers spend real time on networking, security hardening, and observability — understanding RBAC, network policies, metrics, and logs is what separates someone who can write a manifest from someone who can run a production cluster reliably.</p>
+
+  <h2>Which tools does Kubernetes work use?</h2>
+  <p>A typical toolchain starts with kubectl and YAML for direct cluster interaction, adds a packaging layer for repeatable deployments, and finishes with observability tooling to keep production workloads healthy.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Control Layer</div><p>Interacts with the cluster using kubectl, YAML manifests, and the Kubernetes API directly.</p></div>
+    <div class="tech-card"><div class="tc-name">Delivery Layer</div><p>Packages and ships applications repeatably using Helm, Kustomize, and GitOps tools like Argo CD.</p></div>
+    <div class="tech-card"><div class="tc-name">Operations Layer</div><p>Keeps clusters healthy and secure using Prometheus, Grafana, RBAC, and network policies.</p></div>
+  </div>
+
+  <h2>What skills does working with Kubernetes require?</h2>
+  <p>This roadmap targets engineers looking to build a practical, production-relevant skill set. Beyond basic container knowledge, these are the checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Container Fundamentals</b> Understanding images, containers, and basic Docker workflows.</div>
+    <div class="skill-row"><b>2. Cluster Architecture</b> Explaining how the control plane and worker nodes cooperate.</div>
+    <div class="skill-row"><b>3. Core Objects</b> Deploying and managing Pods, ReplicaSets, and Deployments with kubectl.</div>
+    <div class="skill-row"><b>4. Networking</b> Exposing apps with Services and Ingress, and restricting traffic with Network Policies.</div>
+    <div class="skill-row"><b>5. Storage</b> Attaching persistent storage and externalizing configuration with ConfigMaps and Secrets.</div>
+    <div class="skill-row"><b>6. Workload Management</b> Running Jobs, StatefulSets, DaemonSets, and configuring autoscaling.</div>
+    <div class="skill-row"><b>7. Security</b> Applying RBAC, Pod Security Standards, and Service Accounts correctly.</div>
+    <div class="skill-row"><b>8. Observability</b> Reading logs, metrics, and events to diagnose real cluster issues.</div>
+    <div class="skill-row"><b>9. GitOps Delivery</b> Packaging apps with Helm and deploying them through a Git-driven pipeline.</div>
+    <div class="skill-row"><b>10. Production Readiness</b> Operating a secured, observed, autoscaled cluster end to end.</div>
+  </div>
+  <p>Use the checkpoints as milestones, and spin up a real cluster — even a local one like kind or minikube — to practice each concept hands-on.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">What exactly does Kubernetes do? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Kubernetes is an open-source container orchestration platform used to automate the deployment, scaling, management, and networking of containerized applications. It enables self-healing applications, efficient resource utilization, service discovery, automated rollouts and rollbacks, and consistent operations across multi-cloud or hybrid environments.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is Kubernetes easy to learn? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Kubernetes has a real learning curve because it introduces many new concepts at once — Pods, controllers, networking, and storage abstractions all interact. It's very learnable with a structured path and consistent hands-on practice, but expect it to take longer than picking up a single tool or library.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How should I prepare for a Kubernetes interview? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Focus on being able to explain the architecture clearly, troubleshoot a broken Deployment or Service from symptoms alone, and describe real tradeoffs — like when to use a StatefulSet over a Deployment. Hands-on experience with kubectl debugging tends to matter more than memorized definitions.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need to know Docker before learning Kubernetes? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes, a working knowledge of containers is assumed. Kubernetes orchestrates containers rather than building them, so understanding images, container networking, and volumes first makes everything that follows much easier to reason about.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">357<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">48<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

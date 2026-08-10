@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Backend Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:1.1rem}
+
+/* COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="#">Roadmaps</a>
+    <a href="#">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="#">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="#">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Backend</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">⚙️</div>
+    <div class="rm-title">
+      <h1>Backend Developer</h1>
+      <p>Step by step guide to becoming a modern backend developer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('Projects demo — coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<!-- ROADMAP TOOLBAR -->
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- ROADMAP CANVAS -->
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <!-- 1. Internet -->
+    <div class="rm-node" data-id="internet" data-desc="Understand the basics of how the internet works: IP addresses, DNS, HTTP/HTTPS, domain names, hosting, and how data flows between a browser and a server.">How does the internet work?</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Internet Fundamentals</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="http" data-desc="Master HTTP/HTTPS — methods (GET, POST, PUT, DELETE), status codes, headers, cookies, and how the request-response cycle works."><span class="dot"></span>HTTP / HTTPS</div>
+        <div class="rm-chip" data-id="dns" data-desc="Learn how DNS resolves domain names to IP addresses, the role of name servers, and how CDNs fit in."><span class="dot"></span>DNS & Domain Names</div>
+        <div class="rm-chip" data-id="hosting" data-desc="Understand web hosting concepts: shared, VPS, dedicated servers, and cloud platforms like AWS, GCP, and Azure."><span class="dot"></span>Hosting & Cloud Basics</div>
+        <div class="rm-chip" data-id="browsers" data-desc="Know what happens after a user types a URL — TCP handshake, TLS, request headers, server response, and rendering."><span class="dot"></span>How Browsers Work</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 2. Language -->
+    <div class="rm-node" data-id="language" data-desc="Pick a backend programming language to start with. Node.js (JavaScript), Python, Go, Java, and Ruby are popular choices. Master one before branching out.">Pick a Language</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Popular Backend Languages</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Pick One</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="nodejs" data-desc="JavaScript on the server — async by default, npm ecosystem, great for REST APIs and real-time apps with Socket.io."><span class="dot"></span>Node.js / JavaScript</div>
+        <div class="rm-chip" data-id="python" data-desc="Readable syntax, massive ecosystem. Django and FastAPI for web; Pandas and NumPy for data. Great for beginners and pros alike."><span class="dot"></span>Python</div>
+        <div class="rm-chip" data-id="golang" data-desc="Compiled, statically typed, blazing fast. Excellent for microservices and CLI tools. Built-in concurrency with goroutines."><span class="dot"></span>Go (Golang)</div>
+        <div class="rm-chip" data-id="java" data-desc="Enterprise-grade, strongly typed. Spring Boot makes it approachable. Dominant in large organisations and Android development."><span class="dot"></span>Java</div>
+        <div class="rm-chip" data-id="rust" data-desc="Memory-safe, zero-cost abstractions, near C-level speed. Steep learning curve but rewarding for systems-level backend work." ><span class="dot"></span>Rust <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="php" data-desc="Powers a huge chunk of the web (WordPress, Laravel). Easy to deploy, massive hosting support, Laravel is a mature framework."><span class="dot"></span>PHP</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 3. Version Control -->
+    <div class="rm-node" data-id="git" data-desc="Learn Git fundamentals: init, clone, add, commit, push, pull, branching, merging, rebasing, and resolving conflicts. Use GitHub or GitLab for remote collaboration.">Git & Version Control</div>
+    <div class="rm-connector"></div>
+
+    <!-- 4. Databases -->
+    <div class="rm-node" data-id="databases" data-desc="Databases are the backbone of backend development. Start with a relational DB like PostgreSQL, then explore NoSQL options.">Databases</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Relational Databases</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="postgresql" data-desc="The world's most advanced open-source relational database. Learn CRUD, JOINs, indexes, transactions, and query optimisation."><span class="dot"></span>PostgreSQL</div>
+        <div class="rm-chip" data-id="mysql" data-desc="Widely used, especially with PHP stacks. Same SQL fundamentals as PostgreSQL with slightly different syntax and features."><span class="dot"></span>MySQL</div>
+        <div class="rm-chip" data-id="sqlite" data-desc="Embedded, file-based DB — perfect for development, testing, mobile apps, and small self-hosted tools."><span class="dot"></span>SQLite <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="sql" data-desc="Learn SQL deeply: SELECT, INSERT, UPDATE, DELETE, GROUP BY, HAVING, subqueries, CTEs, window functions."><span class="dot"></span>SQL Fundamentals</div>
+      </div>
+    </div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>NoSQL Databases</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Learn One</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="mongodb" data-desc="Document-oriented, JSON-like BSON documents. Flexible schema, great for rapid prototyping and content-heavy apps."><span class="dot"></span>MongoDB</div>
+        <div class="rm-chip" data-id="redis" data-desc="In-memory key-value store. Used for caching, session storage, pub/sub messaging, rate limiting, and leaderboards."><span class="dot"></span>Redis</div>
+        <div class="rm-chip" data-id="dynamodb" data-desc="AWS managed NoSQL. Pay-per-request pricing, auto-scaling. Great for serverless architectures on AWS."><span class="dot"></span>DynamoDB <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cassandra" data-desc="Wide-column store built for high availability and massive write throughput. Common in financial and IoT systems."><span class="dot"></span>Cassandra <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 5. APIs -->
+    <div class="rm-node" data-id="apis" data-desc="APIs let your backend communicate with frontends and other services. REST is the standard; GraphQL and gRPC are powerful alternatives.">Learn about APIs</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>API Design & Protocols</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="rest" data-desc="REST: resources, HTTP verbs, status codes, statelessness, pagination, and versioning. The default API style for web services."><span class="dot"></span>REST APIs</div>
+        <div class="rm-chip" data-id="json" data-desc="JSON is the lingua franca of web APIs. Learn serialisation, deserialization, and schema validation (JSON Schema)."><span class="dot"></span>JSON & Serialisation</div>
+        <div class="rm-chip" data-id="graphql" data-desc="Query exactly the data you need. GraphQL reduces over-fetching and under-fetching. Apollo and Hasura are popular tools."><span class="dot"></span>GraphQL <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="grpc" data-desc="High-performance RPC framework using Protocol Buffers. Ideal for microservices and low-latency service-to-service calls."><span class="dot"></span>gRPC <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="websockets" data-desc="Full-duplex communication over a single TCP connection. Essential for real-time features like chat, notifications, and live data."><span class="dot"></span>WebSockets</div>
+        <div class="rm-chip" data-id="openapi" data-desc="Document your REST APIs with OpenAPI (Swagger). Generate client SDKs, interactive docs, and mock servers automatically."><span class="dot"></span>OpenAPI / Swagger</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 6. Caching -->
+    <div class="rm-node" data-id="caching" data-desc="Caching dramatically improves performance. Learn server-side (Redis, Memcached), client-side, and CDN caching strategies.">Caching</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Caching Strategies</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="redis-cache" data-desc="Use Redis as a cache layer: cache-aside, write-through, TTL management, cache invalidation, and distributed locking."><span class="dot"></span>Redis Caching</div>
+        <div class="rm-chip" data-id="cdn" data-desc="CDNs serve static assets and even dynamic content from edge nodes worldwide — Cloudflare, AWS CloudFront, Fastly."><span class="dot"></span>CDN Caching</div>
+        <div class="rm-chip" data-id="memcached" data-desc="Simple, high-performance distributed memory caching. Lighter than Redis but no persistence or data structures."><span class="dot"></span>Memcached <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="http-cache" data-desc="HTTP caching headers: Cache-Control, ETag, Last-Modified, and how to build cache-friendly APIs."><span class="dot"></span>HTTP Cache Headers</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+    <!-- 7. Auth -->
+    <div class="rm-node" data-id="auth" data-desc="Authentication verifies who a user is. Authorisation controls what they can do. Both are critical for any real-world application.">Authentication & Security</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Auth Mechanisms</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="jwt" data-desc="JSON Web Tokens: structure (header.payload.signature), signing algorithms (HS256, RS256), access vs refresh tokens, and token storage."><span class="dot"></span>JWT</div>
+        <div class="rm-chip" data-id="oauth" data-desc="OAuth 2.0 is the standard for delegated authorisation (Sign in with Google/GitHub). Understand the authorisation code flow."><span class="dot"></span>OAuth 2.0 / OpenID Connect</div>
+        <div class="rm-chip" data-id="sessions" data-desc="Server-side sessions with session IDs stored in cookies. Understand session fixation, hijacking, and secure cookie flags."><span class="dot"></span>Session-based Auth</div>
+        <div class="rm-chip" data-id="hashing" data-desc="Never store plain-text passwords. Use bcrypt, Argon2, or scrypt for password hashing with salts."><span class="dot"></span>Password Hashing</div>
+        <div class="rm-chip" data-id="https-tls" data-desc="TLS/SSL secures data in transit. Understand certificates, HTTPS redirect, HSTS, and Let's Encrypt for free certs."><span class="dot"></span>HTTPS & TLS</div>
+        <div class="rm-chip" data-id="rbac" data-desc="Role-Based Access Control: define roles (admin, editor, viewer) and assign permissions. Implement middleware-level guards."><span class="dot"></span>RBAC / Permissions</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 8. Testing -->
+    <div class="rm-node" data-id="testing" data-desc="Automated testing catches bugs early and lets you refactor safely. Unit tests, integration tests, and end-to-end tests form a solid testing pyramid.">Testing</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Testing Types & Tools</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="unit-tests" data-desc="Test individual functions and modules in isolation. Use Jest (Node.js), pytest (Python), JUnit (Java), or Go's testing package."><span class="dot"></span>Unit Testing</div>
+        <div class="rm-chip" data-id="integration-tests" data-desc="Test that multiple units work together correctly — especially database interactions, API routes, and service integrations."><span class="dot"></span>Integration Testing</div>
+        <div class="rm-chip" data-id="e2e-tests" data-desc="End-to-end tests verify the full request-response cycle. Supertest for Node, httptest for Go, and pytest-httpx for Python."><span class="dot"></span>E2E / API Testing</div>
+        <div class="rm-chip" data-id="tdd" data-desc="Test-Driven Development: write the failing test first, then write the minimal code to make it pass, then refactor."><span class="dot"></span>TDD Approach <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 9. CI/CD & DevOps -->
+    <div class="rm-node" data-id="cicd" data-desc="CI/CD automates testing and deployment. Learn pipelines, containers, and infrastructure as code to ship confidently.">CI/CD & Deployment</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>DevOps Essentials</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="docker" data-desc="Containerise your app with Docker: Dockerfile, images, containers, volumes, and Docker Compose for multi-service dev environments."><span class="dot"></span>Docker</div>
+        <div class="rm-chip" data-id="github-actions" data-desc="Automate test runs and deployments on every push with GitHub Actions. Write YAML workflows, use marketplace actions."><span class="dot"></span>GitHub Actions / CI</div>
+        <div class="rm-chip" data-id="linux" data-desc="Learn Linux command line basics: file system, permissions, processes, environment variables, cron jobs, and SSH."><span class="dot"></span>Linux & CLI</div>
+        <div class="rm-chip" data-id="nginx" data-desc="NGINX as a reverse proxy, load balancer, and static file server. Configure virtual hosts, SSL termination, and rate limiting."><span class="dot"></span>NGINX / Reverse Proxy</div>
+        <div class="rm-chip" data-id="kubernetes" data-desc="Kubernetes orchestrates containers at scale — pods, deployments, services, ingress, ConfigMaps, and Helm charts."><span class="dot"></span>Kubernetes <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="terraform" data-desc="Infrastructure as Code with Terraform: provision cloud resources reproducibly across AWS, GCP, and Azure."><span class="dot"></span>Terraform <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 10. Message Queues -->
+    <div class="rm-node" data-id="messaging" data-desc="Message queues decouple services, enabling async processing, background jobs, and event-driven architectures.">Message Brokers</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Messaging & Queues</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Learn One</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="rabbitmq" data-desc="AMQP-based message broker. Exchanges, queues, routing keys, dead-letter queues, and acknowledgements."><span class="dot"></span>RabbitMQ</div>
+        <div class="rm-chip" data-id="kafka" data-desc="Distributed event streaming platform built for high throughput. Topics, partitions, consumer groups, offsets."><span class="dot"></span>Apache Kafka</div>
+        <div class="rm-chip" data-id="sqs" data-desc="AWS SQS is a fully managed queue. Combine with SNS for fan-out patterns and Lambda for serverless consumers."><span class="dot"></span>AWS SQS / SNS <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 11. Architecture -->
+    <div class="rm-node" data-id="architecture" data-desc="Understand system design principles to build scalable, maintainable, and resilient backend systems.">System Design & Architecture</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Architecture Patterns</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="microservices" data-desc="Break monoliths into independently deployable services. Learn service discovery, API gateways, and inter-service communication."><span class="dot"></span>Microservices</div>
+        <div class="rm-chip" data-id="monolith" data-desc="A well-structured monolith is perfectly valid and often simpler. Understand when to split and when to stay monolithic."><span class="dot"></span>Monolithic Architecture</div>
+        <div class="rm-chip" data-id="serverless" data-desc="Functions as a Service (AWS Lambda, Vercel, Cloudflare Workers). No server management, pay-per-invocation pricing."><span class="dot"></span>Serverless</div>
+        <div class="rm-chip" data-id="event-driven" data-desc="Build systems that react to events. Event sourcing, CQRS, and the saga pattern for distributed transactions."><span class="dot"></span>Event-Driven Architecture</div>
+        <div class="rm-chip" data-id="solid" data-desc="SOLID principles: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion."><span class="dot"></span>SOLID Principles</div>
+        <div class="rm-chip" data-id="12factor" data-desc="The 12-Factor App methodology for building robust, portable, cloud-native backend applications."><span class="dot"></span>12-Factor App</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 12. Observability -->
+    <div class="rm-node" data-id="observability" data-desc="You can't fix what you can't see. Logging, metrics, and distributed tracing form the three pillars of observability.">Observability & Monitoring</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Monitoring Tools</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="logging" data-desc="Structured logging with JSON, log levels (debug, info, warn, error), log aggregation with ELK stack or Loki/Grafana."><span class="dot"></span>Logging (ELK / Loki)</div>
+        <div class="rm-chip" data-id="metrics" data-desc="Collect metrics with Prometheus, visualise with Grafana. Track request rate, error rate, latency (RED metrics)."><span class="dot"></span>Metrics (Prometheus + Grafana)</div>
+        <div class="rm-chip" data-id="tracing" data-desc="Distributed tracing with OpenTelemetry, Jaeger, or Datadog APM. Trace a request across multiple services."><span class="dot"></span>Distributed Tracing</div>
+        <div class="rm-chip" data-id="alerting" data-desc="Set up alerts for error rate spikes, latency degradation, and resource exhaustion. PagerDuty, Opsgenie, or Grafana Alerting."><span class="dot"></span>Alerting <span class="opt">Optional</span></div>
+      </div>
+    </div>
+
+  </div><!-- /rm-track -->
+</div><!-- /roadmap-canvas -->
+
+<!-- NODE DETAIL POPOVER -->
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head">
+    <h4 id="ndTitle"></h4>
+    <button class="nd-close" onclick="closeDetail()">✕</button>
+  </div>
+  <p class="nd-desc" id="ndDesc"></p>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="closeDetail()">Dismiss</button>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+  <h2>What is Backend Development?</h2>
+  <p>Backend development refers to the server-side aspect of web development, focusing on creating and managing the <strong>server logic, databases, and APIs</strong>. It involves handling user authentication, authorization, and processing user requests, typically using backend languages such as <strong>Python, Java, Go, PHP, JavaScript (Node.js), and .NET</strong>.</p>
+
+  <h2>What does a Backend Developer do?</h2>
+  <p>A backend developer creates and maintains the server-side components of web applications. Key responsibilities include:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>APIs</b> — Design and build RESTful or GraphQL APIs consumed by frontends and third-party clients.</div>
+    <div class="skill-row"><b>Databases</b> — Model data, write optimised queries, manage migrations, and handle transactions.</div>
+    <div class="skill-row"><b>Auth</b> — Implement authentication (who are you?) and authorization (what can you do?).</div>
+    <div class="skill-row"><b>Integrations</b> — Connect external services: payment gateways, email providers, cloud storage, and third-party APIs.</div>
+    <div class="skill-row"><b>Performance</b> — Profile, cache, and optimise to handle high traffic loads reliably.</div>
+    <div class="skill-row"><b>Security</b> — Protect against SQL injection, XSS, CSRF, and other common attack vectors.</div>
+  </div>
+
+  <h2>Popular Backend Frameworks</h2>
+  <p>Once you've chosen a language, a framework handles the boilerplate so you can focus on business logic.</p>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tc-name">Express.js</div>
+      <p style="color:var(--muted)">Minimal Node.js web framework. Fast, unopinionated, massive ecosystem.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Django / FastAPI</div>
+      <p style="color:var(--muted)">Django for full-featured apps; FastAPI for high-performance async APIs in Python.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Spring Boot</div>
+      <p style="color:var(--muted)">Enterprise Java framework with dependency injection, auto-configuration, and rich ecosystem.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Laravel</div>
+      <p style="color:var(--muted)">Elegant PHP framework with Eloquent ORM, queues, and a great developer experience.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Gin / Fiber</div>
+      <p style="color:var(--muted)">Lightweight, blazing-fast HTTP frameworks for Go — ideal for high-throughput microservices.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">NestJS</div>
+      <p style="color:var(--muted)">Opinionated TypeScript framework with Angular-like architecture — great for large teams.</p>
+    </div>
+  </div>
+</article>
+
+<!-- FAQ -->
+<section>
+  <div class="faq-wrap">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:1rem">Frequently Asked Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">How to become a Backend Developer? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Start by learning a backend programming language — Python, Node.js, or Go are beginner-friendly choices. Learn the package manager for that language, then pick up a relational database (PostgreSQL is a great start) and learn basic CRUD operations. Build a simple RESTful API with authentication, and learn Git throughout. Once you're comfortable, work on projects, contribute to open source, and start applying. No CS degree required, but a strong portfolio helps enormously.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does it take to become a Backend Developer? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">With focused, consistent effort — typically 1–2 hours a day — most learners reach a job-ready level in 9–18 months. Prior programming experience shortens this significantly. The roadmap above isn't a race; work through the core spine (language → DB → APIs → auth) before branching into optional topics.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What are Backend Developer salaries? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Salaries vary widely by location, experience, and company size. In the US, entry-level backend developers typically earn $70k–$100k, mid-level $100k–$150k, and senior engineers $150k–$250k+. Remote-friendly companies often hire globally, which creates opportunities in markets with lower local averages.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Should I learn everything on this roadmap? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">No. Items marked "Optional" are valuable but not required for most entry-to-mid-level roles. Focus on the core path — a language, SQL, REST APIs, auth, testing, and basic DevOps with Docker. Once you're employed, you'll naturally pick up the rest based on what your team uses.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What tools does a Backend Developer use day-to-day? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">A typical backend developer's toolkit includes: a code editor (VS Code, JetBrains IDEs), Git + GitHub/GitLab, a database GUI (TablePlus, DBeaver), an API testing tool (Postman, Insomnia, or Bruno), Docker Desktop for local containers, and a terminal. On the cloud side, AWS Console, Vercel, or Railway are common.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="#">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// FAQ ACCORDION
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ROADMAP NODE PROGRESS
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

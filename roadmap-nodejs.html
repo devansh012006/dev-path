@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Node.js Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--mint);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:1.1rem}
+
+/* COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(16,185,129,.08),rgba(79,126,255,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06231a" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="#">Roadmaps</a>
+    <a href="#">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="#">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="#">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Node.js</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🟢</div>
+    <div class="rm-title">
+      <h1>Node.js Developer</h1>
+      <p>Step by step guide to becoming a modern Node.js developer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('Projects demo — coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<!-- ROADMAP TOOLBAR -->
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- ROADMAP CANVAS -->
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <!-- 1. Intro -->
+    <div class="rm-node" data-id="intro" data-desc="Understand what Node.js is, how it enables JavaScript on the server, and how it differs from browser-based JS.">Introduction to Node.js</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Node.js Fundamentals</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="what-is-node" data-desc="Learn the history, V8 engine runtime, and why Node.js is ideal for scalable web apps."><span class="dot"></span>What & Why?</div>
+        <div class="rm-chip" data-id="node-vs-browser" data-desc="Differences from browser JS: No DOM, no window object, access to file system and networking."><span class="dot"></span>Node.js vs Browser</div>
+        <div class="rm-chip" data-id="running-code" data-desc="Executing code via the CLI using `node filename.js` and working with the REPL."><span class="dot"></span>Running Node.js Code</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 2. Modules -->
+    <div class="rm-node" data-id="modules" data-desc="Modules allow you to split your code into reusable files. Node supports two main module systems.">Modules</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Module Systems</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Learn Both</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="commonjs" data-desc="The classic Node.js module format using `require()` and `module.exports`."><span class="dot"></span>CommonJS</div>
+        <div class="rm-chip" data-id="esm" data-desc="ECMAScript Modules (ESM) using `import` and `export`. The modern standard for JS."><span class="dot"></span>ESM (ECMAScript Modules)</div>
+        <div class="rm-chip" data-id="global-keyword" data-desc="Understanding the `global` object in Node.js (similar to `window` in browsers)."><span class="dot"></span>[global] keyword</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 3. npm -->
+    <div class="rm-node" data-id="npm" data-desc="Node Package Manager (npm) is used to install, share, and manage dependencies in your projects.">npm & Package Management</div>
+    <div class="rm-connector"></div>
+    
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Working with Packages</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="local-global" data-desc="Understand local vs global installation, and modifying your `package.json`."><span class="dot"></span>Installing Packages</div>
+        <div class="rm-chip" data-id="npm-scripts" data-desc="Automating tasks by defining and running custom scripts via `npm run`."><span class="dot"></span>Running Scripts</div>
+        <div class="rm-chip" data-id="npx" data-desc="Using `npx` to execute binaries from npm packages without installing them globally."><span class="dot"></span>npx</div>
+        <div class="rm-chip" data-id="semantic-versioning" data-desc="Learn how versions are mapped (Major, Minor, Patch) and how caret/tilde work in package.json."><span class="dot"></span>Semantic Versioning</div>
+        <div class="rm-chip" data-id="workspaces" data-desc="Managing multiple packages within a single top-level root package using npm workspaces."><span class="dot"></span>npm Workspaces <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 4. Async Programming -->
+    <div class="rm-node" data-id="async" data-desc="Because Node.js is single-threaded, non-blocking asynchronous programming is central to its performance.">Async Programming</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Handling Async Data</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Crucial</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="callbacks" data-desc="The original way of handling async operations. Understand 'Callback Hell' and error-first callbacks."><span class="dot"></span>Callbacks</div>
+        <div class="rm-chip" data-id="promises" data-desc="Objects representing the eventual completion of an async operation. Used with `.then()` and `.catch()`."><span class="dot"></span>Promises</div>
+        <div class="rm-chip" data-id="async-await" data-desc="Syntactic sugar over Promises. Write async code that looks synchronous and is easier to read."><span class="dot"></span>async/await</div>
+        <div class="rm-chip" data-id="event-emitter" data-desc="Core module for creating and handling custom events. Fundamental to how Node streams work."><span class="dot"></span>Event Emitter</div>
+        <div class="rm-chip" data-id="event-loop" data-desc="Understand the phases of the Event Loop, timers (`setTimeout`), and `process.nextTick`."><span class="dot"></span>The Event Loop</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 5. Error Handling -->
+    <div class="rm-node" data-id="errors" data-desc="Robust applications gracefully handle crashes and exceptions. Master standard and async error handling.">Error Handling & Debugging</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Troubleshooting Code</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="error-types" data-desc="Understand JavaScript errors, System errors, and User-specified errors."><span class="dot"></span>Types of Errors</div>
+        <div class="rm-chip" data-id="uncaught" data-desc="Dealing with uncaught exceptions and unhandled promise rejections properly."><span class="dot"></span>Uncaught Exceptions</div>
+        <div class="rm-chip" data-id="debugger" data-desc="Utilize the built-in Node.js debugger or VS Code to step through execution and read stack traces."><span class="dot"></span>Using Debugger</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 6. File System -->
+    <div class="rm-node" data-id="filesystem" data-desc="Interact with the operating system directly. Read, write, update, and watch files and directories.">Working with Files</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core System Modules</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="fs-module" data-desc="The `fs` (File System) module. Learn both sync and promise-based file reading/writing."><span class="dot"></span>fs module</div>
+        <div class="rm-chip" data-id="path-module" data-desc="Handle and transform file paths reliably across different operating systems using `path`."><span class="dot"></span>path & globals</div>
+        <div class="rm-chip" data-id="chokidar" data-desc="Open-source packages like `chokidar` for watching file changes efficiently."><span class="dot"></span>chokidar / file watchers <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 7. Building APIs -->
+    <div class="rm-node" data-id="apis" data-desc="Node.js is highly favored for writing scalable REST and GraphQL APIs. Choose a framework to get started.">Building APIs</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Web Frameworks</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="express" data-desc="The most popular and established minimalist web framework for Node.js. Great for building quick APIs."><span class="dot"></span>Express.js</div>
+        <div class="rm-chip" data-id="fastify" data-desc="Highly focused on providing the best developer experience with the least overhead and a powerful plugin architecture."><span class="dot"></span>fastify</div>
+        <div class="rm-chip" data-id="nestjs" data-desc="A progressive, TypeScript-first framework building heavily on decorators and DI. Great for enterprise structures."><span class="dot"></span>NestJS</div>
+        <div class="rm-chip" data-id="hono" data-desc="Small, simple, and ultrafast framework optimized for Edge computing (Cloudflare Workers, Deno, Node)."><span class="dot"></span>Hono <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 8. Databases -->
+    <div class="rm-node" data-id="databases" data-desc="Connect your Node.js apps to persistent storage using ORMs, query builders, or native drivers.">Working with Databases</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Connecting to DBs</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="mongoose" data-desc="The go-to Object Data Modeling (ODM) library for MongoDB and Node.js."><span class="dot"></span>Mongoose (NoSQL)</div>
+        <div class="rm-chip" data-id="prisma" data-desc="Next-generation Node.js and TypeScript ORM for relational databases like PostgreSQL."><span class="dot"></span>Prisma (Relational)</div>
+        <div class="rm-chip" data-id="typeorm" data-desc="An ORM that can run in NodeJS, Browser, Cordova, PhoneGap, Ionic, React Native, NativeScript, Expo, and Electron."><span class="dot"></span>TypeORM</div>
+        <div class="rm-chip" data-id="drizzle" data-desc="A lightweight, fast, and type-safe TypeScript ORM that has been gaining massive popularity."><span class="dot"></span>Drizzle <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 9. Auth & Testing -->
+    <div class="rm-node" data-id="testing-auth" data-desc="Secure your API endpoints and write automated tests to ensure app reliability.">Auth & Testing</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Security & Quality</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="jwt" data-desc="Implement stateless authentication using `jsonwebtoken`."><span class="dot"></span>JWT Auth</div>
+        <div class="rm-chip" data-id="passport" data-desc="Extremely flexible and modular authentication middleware for Node.js (OAuth, Social login)."><span class="dot"></span>passport.js</div>
+        <div class="rm-chip" data-id="jest" data-desc="Delightful JavaScript Testing Framework with a focus on simplicity."><span class="dot"></span>Jest</div>
+        <div class="rm-chip" data-id="vitest" data-desc="A blazing fast unit test framework powered by Vite."><span class="dot"></span>Vitest</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 10. Advanced -->
+    <div class="rm-node" data-id="advanced" data-desc="Delve into complex topics like scaling, streams, performance monitoring, and avoiding memory leaks.">Advanced Topics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Scaling & Performance</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="pm2" data-desc="Production process manager that helps keep your Node app running 24/7 with clustering."><span class="dot"></span>PM2 (Keep app running)</div>
+        <div class="rm-chip" data-id="threads" data-desc="Utilize multiple CPU cores using the `cluster` module and `worker_threads` for heavy computation."><span class="dot"></span>Worker Threads & Cluster</div>
+        <div class="rm-chip" data-id="streams" data-desc="Process reading and writing data piece by piece to handle massive files with low memory footprint."><span class="dot"></span>Streams</div>
+        <div class="rm-chip" data-id="memory-leaks" data-desc="Learn Garbage Collection mechanics and use Node's APM or `--inspect` tools to find memory leaks."><span class="dot"></span>Debugging Memory Leaks</div>
+      </div>
+    </div>
+
+  </div><!-- /rm-track -->
+</div><!-- /roadmap-canvas -->
+
+<!-- NODE DETAIL POPOVER -->
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head">
+    <h4 id="ndTitle"></h4>
+    <button class="nd-close" onclick="closeDetail()">✕</button>
+  </div>
+  <p class="nd-desc" id="ndDesc"></p>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="closeDetail()">Dismiss</button>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+  <h2>What is Node.js?</h2>
+  <p>Node.js is an open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser[cite: 1]. Historically, JavaScript was used primarily for client-side scripting (in the browser), but Node.js allows developers to use JS to write command line tools and <strong>server-side scripting</strong>—running scripts server-side to produce dynamic web page content before the page is sent to the user's web browser.</p>
+
+  <h2>What can you build with Node.js?</h2>
+  <p>Because of its non-blocking, event-driven architecture, Node.js excels at building scalable network applications. Key use cases include:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>REST APIs</b> — Powering data flow for single-page applications or mobile apps (e.g., student networking apps, team group projects).</div>
+    <div class="skill-row"><b>Real-time Apps</b> — WebSockets and Node's event loop make it perfect for chat applications and live collaborative tools.</div>
+    <div class="skill-row"><b>CLI Tools</b> — Using libraries like `commander` and `inquirer` to build powerful developer tooling.</div>
+    <div class="skill-row"><b>Microservices</b> — Lightweight architecture allows it to fit neatly into Docker containers and Kubernetes clusters.</div>
+    <div class="skill-row"><b>Streaming</b> — Processing large data streams directly on the server without consuming massive memory.</div>
+  </div>
+
+  <h2>Popular Node.js Frameworks</h2>
+  <p>While you can build APIs with the native `http` module, modern developers utilize frameworks to speed up routing and middleware[cite: 1].</p>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tc-name">Express.js</div>
+      <p style="color:var(--muted)">The most popular, unopinionated framework. Perfect for learning how middleware pipelines function.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Fastify</div>
+      <p style="color:var(--muted)">Focused on extremely high performance and low overhead, with built-in schema validation.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">NestJS</div>
+      <p style="color:var(--muted)">Heavily inspired by Angular, it uses decorators and TypeScript to provide robust dependency injection.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Hono</div>
+      <p style="color:var(--muted)">A fast and lightweight framework primarily designed for Edge environments like Cloudflare Workers.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Prisma (ORM)</div>
+      <p style="color:var(--muted)">Not a web framework, but a crucial data-layer tool providing an intuitive, type-safe database client.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Mongoose</div>
+      <p style="color:var(--muted)">An elegant MongoDB object modeling tool, offering a schema-based solution to model application data.</p>
+    </div>
+  </div>
+</article>
+
+<!-- FAQ -->
+<section>
+  <div class="faq-wrap">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:1rem">Frequently Asked Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to learn JavaScript before Node.js? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Yes. Node.js *is* a JavaScript runtime[cite: 1]. You must be comfortable with JS fundamentals—particularly variables, functions, objects, arrays, and ES6 syntax like destructuring and arrow functions—before diving into Node-specific APIs.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does it take to learn Node.js? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">If you already know JavaScript, you can grasp Node.js fundamentals (modules, fs, async logic, Express) in about 4–6 weeks. Mastering backend architecture, complex databases, and deployment usually takes an additional 4–6 months of building real projects.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Is Node.js good for scalable projects? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Absolutely. Many major tech companies (Netflix, Uber, PayPal) rely on Node.js because its non-blocking I/O model handles high-concurrency workloads—like real-time networking and microservice ecosystems—incredibly well.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Should I learn everything on this roadmap? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">No. Focus on the core path: Modules, npm, Async patterns, building an API in Express/Fastify, and connecting a Database. Tools marked as "Optional" or "Advanced" (like Worker Threads or Drizzle) can be learned later as needed.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What tools does a Node Developer use day-to-day? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">A typical toolkit includes VS Code (with Node and Jest extensions), Postman/Insomnia for API testing, `nodemon` or `--watch` for hot-reloading during development[cite: 1], a database GUI (like MongoDB Compass or TablePlus), and Docker.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — join hundreds of thousands of developers growing their careers[cite: 1].</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">361<span style="color:var(--mint)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month[cite: 1]</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+2k every month[cite: 1]</div>
+        <a href="#" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month[cite: 1]</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="#">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// FAQ ACCORDION
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ROADMAP NODE PROGRESS
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

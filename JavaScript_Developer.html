@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JavaScript Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--amber);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--amber);color:#1a1200!important;padding:.38rem 1rem;border-radius:6px;font-weight:600;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--amber)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.28);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--amber);color:var(--text)}
+.rm-tab.active{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:var(--amber)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--amber)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--amber)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--amber);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--amber)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="2.4"><path d="M6 3v11a3 3 0 003 3h0" stroke-linecap="round"/><path d="M13 3v11.5a2.5 2.5 0 005 0V13" stroke-linecap="round"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">JavaScript</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🟨</div>
+    <div class="rm-title">
+      <h1>JavaScript Developer</h1>
+      <p>Step by step guide to learn JavaScript in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="intro" data-desc="Understand what JavaScript is, where it came from, and how it actually runs before writing any real code.">1. Introduction to JavaScript</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>The Basics</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="what-is-js" data-desc="JavaScript is a flexible, dynamic scripting language and one of the core technologies of the web, alongside HTML and CSS.">What is JavaScript? <span class="dot"></span></div>
+        <div class="rm-chip" data-id="history" data-desc="Created in 1995 by Brendan Eich, standardized as ECMAScript, and now the only language natively supported by every browser.">History of JavaScript <span class="dot"></span></div>
+        <div class="rm-chip" data-id="versions" data-desc="Track ECMAScript editions from ES5 through modern yearly releases (ES2015+) and the features each one introduced.">JavaScript Versions <span class="dot"></span></div>
+        <div class="rm-chip" data-id="how-to-run" data-desc="Run JavaScript in the browser console, via script tags, or server-side using runtimes like Node.js, Bun, or Deno.">How to Run JavaScript <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="variables-types" data-desc="Learn how values are stored, scoped, and typed — the foundation every other JavaScript concept builds on.">2. Variables &amp; Data Types</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Variable Declarations &amp; Scope</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="var" data-desc="The original function-scoped declaration keyword, hoisted and re-assignable — mostly avoided in modern code.">var <span class="dot"></span></div>
+        <div class="rm-chip" data-id="let" data-desc="Block-scoped, re-assignable variable declaration introduced in ES6 to fix var's scoping quirks.">let <span class="dot"></span></div>
+        <div class="rm-chip" data-id="const" data-desc="Block-scoped declaration for bindings that should never be reassigned after initialization.">const <span class="dot"></span></div>
+        <div class="rm-chip" data-id="scopes" data-desc="Understand block, function, and global scope, plus how hoisting moves declarations to the top of their scope.">Scopes &amp; Hoisting <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Data Types</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Fundamentals</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="primitives" data-desc="string, number, bigint, boolean, undefined, symbol, and null — the seven immutable primitive types.">Primitive Types <span class="dot"></span></div>
+        <div class="rm-chip" data-id="objects" data-desc="Mutable key-value collections that form the backbone of almost everything in JavaScript.">Objects <span class="dot"></span></div>
+        <div class="rm-chip" data-id="prototypes" data-desc="Every object links to a prototype, enabling prototypal inheritance and shared behavior across instances.">Object Prototypes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="typeof" data-desc="The typeof operator inspects the type of a value at runtime — useful for debugging and type guards.">typeof Operator <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="structures-casting" data-desc="Store collections of data efficiently and understand how JavaScript converts and compares values under the hood.">3. Data Structures &amp; Type Casting</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Collections</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="arrays" data-desc="Ordered, indexed lists with a huge built-in API for mapping, filtering, and reducing data.">Arrays <span class="dot"></span></div>
+        <div class="rm-chip" data-id="typed-arrays" data-desc="Array-like views over raw binary data buffers, used for performance-critical or low-level operations.">Typed Arrays <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="map-set" data-desc="Map and Set store keyed or unique values respectively; WeakMap and WeakSet allow garbage collection of keys.">Map / Set / WeakMap / WeakSet <span class="dot"></span></div>
+        <div class="rm-chip" data-id="json" data-desc="JavaScript Object Notation — the standard text format for structuring and exchanging data.">JSON <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Type Casting &amp; Equality</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Tricky</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="implicit-casting" data-desc="JavaScript automatically converts types in certain operations — a common source of unexpected bugs.">Implicit Type Casting <span class="dot"></span></div>
+        <div class="rm-chip" data-id="explicit-casting" data-desc="Deliberately converting values using functions like Number(), String(), and Boolean().">Explicit Type Casting <span class="dot"></span></div>
+        <div class="rm-chip" data-id="equality" data-desc="Know the difference between == (loose), === (strict), and Object.is() when comparing values.">== vs === vs Object.is <span class="dot"></span></div>
+        <div class="rm-chip" data-id="same-value-zero" data-desc="The comparison algorithm used internally by Map, Set, and Array.includes to determine value equality.">SameValueZero <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="control-flow" data-desc="Direct the flow of a program with loops, conditionals, and structured handling of runtime errors.">4. Control Flow &amp; Operators</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Loops &amp; Conditionals</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="for-while" data-desc="for, while, and do...while statements repeat a block of code while a condition holds true.">for / while / do...while <span class="dot"></span></div>
+        <div class="rm-chip" data-id="for-in-of" data-desc="for...in iterates over enumerable object keys; for...of iterates over values of any iterable.">for...in vs for...of <span class="dot"></span></div>
+        <div class="rm-chip" data-id="if-switch" data-desc="if...else branches on a condition; switch matches a value against multiple discrete cases.">if...else / switch <span class="dot"></span></div>
+        <div class="rm-chip" data-id="try-catch" data-desc="throw, try, catch, and finally let you gracefully handle and recover from runtime errors.">try / catch / finally <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Expressions &amp; Operators</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="arithmetic-ops" data-desc="Standard math operators (+, -, *, /, %, **) for numeric computation.">Arithmetic Operators <span class="dot"></span></div>
+        <div class="rm-chip" data-id="logical-ops" data-desc="&&, ||, and ! combine or invert boolean expressions and enable short-circuit patterns.">Logical Operators <span class="dot"></span></div>
+        <div class="rm-chip" data-id="bitwise-ops" data-desc="Operate directly on the binary representation of numbers — rarely needed but occasionally powerful.">Bitwise Operators <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="conditional-op" data-desc="The ternary operator (condition ? a : b) offers a compact inline alternative to if...else.">Conditional (Ternary) Operator <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="functions" data-desc="Functions are first-class citizens in JavaScript — mastering them unlocks closures, recursion, and functional patterns.">5. Functions</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Defining &amp; Calling Functions</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="function-params" data-desc="Pass data into functions using default parameters and gather variable-length arguments with rest parameters.">Default &amp; Rest Parameters <span class="dot"></span></div>
+        <div class="rm-chip" data-id="arrow-functions" data-desc="A concise function syntax that also lexically binds 'this' to its surrounding scope.">Arrow Functions <span class="dot"></span></div>
+        <div class="rm-chip" data-id="iife" data-desc="Immediately Invoked Function Expressions run as soon as they're defined, useful for creating private scope.">IIFEs <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="closures" data-desc="A function that remembers the variables from its enclosing scope, even after that scope has finished executing.">Closures <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Scope, this &amp; Binding</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="recursion" data-desc="A function that calls itself to break a problem down into smaller, self-similar subproblems.">Recursion <span class="dot"></span></div>
+        <div class="rm-chip" data-id="this-keyword" data-desc="The value of 'this' changes depending on how a function is called — as a method, standalone, or via an arrow function.">the 'this' Keyword <span class="dot"></span></div>
+        <div class="rm-chip" data-id="strict-mode" data-desc="'use strict' opts your code into a restricted variant of JavaScript that catches common mistakes early.">Strict Mode <span class="dot"></span></div>
+        <div class="rm-chip" data-id="call-apply-bind" data-desc="call, apply, and bind let you explicitly control what 'this' refers to inside a function.">call / apply / bind <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="async" data-desc="Handle operations that take time — network requests, timers, and I/O — without blocking the rest of your program.">6. Asynchronous JavaScript</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Async Patterns</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Essential</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="timers" data-desc="setTimeout schedules code to run once after a delay; setInterval repeats it on a fixed cadence.">setTimeout / setInterval <span class="dot"></span></div>
+        <div class="rm-chip" data-id="callbacks" data-desc="Passing a function to be executed later — the original async pattern, prone to deeply nested 'callback hell'.">Callbacks &amp; Callback Hell <span class="dot"></span></div>
+        <div class="rm-chip" data-id="promises" data-desc="An object representing the eventual result of an async operation, with .then, .catch, and .finally.">Promises <span class="dot"></span></div>
+        <div class="rm-chip" data-id="async-await" data-desc="Syntactic sugar over promises that lets asynchronous code read like synchronous code.">async / await <span class="dot"></span></div>
+        <div class="rm-chip" data-id="event-loop" data-desc="The mechanism that lets JavaScript's single thread handle concurrency using a call stack, task queue, and microtask queue.">Event Loop <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="classes-modules" data-desc="Organize larger codebases using object-oriented patterns, iteration protocols, and a proper module system.">7. Classes, Iterators &amp; Modules</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Classes &amp; Iteration</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="classes" data-desc="Syntactic sugar over prototypal inheritance for defining reusable object blueprints with constructors and methods.">Classes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="iterators" data-desc="Objects that implement a next() method to produce a sequence of values, powering for...of loops.">Iterators <span class="dot"></span></div>
+        <div class="rm-chip" data-id="generators" data-desc="Special functions using function* and yield that can pause and resume execution, producing lazy sequences.">Generators <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Modules</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="esm" data-desc="The standardized import/export syntax for organizing code into reusable, statically analyzable modules.">ES Modules (ESM) <span class="dot"></span></div>
+        <div class="rm-chip" data-id="commonjs" data-desc="Node.js's original require/module.exports module system, still common in older codebases and tooling.">CommonJS <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cjs-vs-esm" data-desc="Understand the interop differences, sync vs. async loading, and when to use each module format.">CommonJS vs ESM <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="memory-debug" data-desc="Keep long-running applications healthy by understanding memory management and knowing how to hunt down bugs.">8. Memory Management &amp; Debugging</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Memory &amp; Debugging</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="memory-lifecycle" data-desc="Every value goes through allocation, use, and release — understanding this cycle prevents memory leaks.">Memory Lifecycle <span class="dot"></span></div>
+        <div class="rm-chip" data-id="garbage-collection" data-desc="JavaScript automatically reclaims memory no longer reachable from the root, using algorithms like mark-and-sweep.">Garbage Collection <span class="dot"></span></div>
+        <div class="rm-chip" data-id="debugging" data-desc="Use browser DevTools, breakpoints, and console methods to trace and fix JavaScript bugs efficiently.">Debugging JS Bugs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="performance" data-desc="Profile and diagnose performance issues like layout thrashing, memory bloat, and long-running tasks.">Performance Issues <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-js" data-desc="You now have a solid grasp of core JavaScript — ready to specialize in a framework, backend runtime, or both.">Checkpoint — JavaScript Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is JavaScript?</h2>
+  <p>JavaScript is a very flexible and versatile programming language, considered a core technology for web development. It's the only language natively supported by all browsers, allowing developers to add dynamic behavior and build complex, interactive user experiences.</p>
+  <p>Because of its flexibility and portability, JavaScript is also widely used for back-end development thanks to runtimes such as Node.js, Bun, and Deno, and even for server-side scripting used in automation and developer tooling.</p>
+
+  <h2>What does a JavaScript developer do?</h2>
+  <p>A JavaScript developer writes and maintains code to build interactive web applications, back-end logic (usually RESTful APIs), or automation scripts. Their day-to-day depends heavily on whether they specialize in the front end, the back end, or work full-stack across both.</p>
+  <p>Front-end focused developers spend their time designing dynamic user interfaces and integrating them with REST APIs to connect to back-end systems. Back-end focused developers spend most of their time building and maintaining APIs, often using a framework such as NestJS or Express.</p>
+
+  <h2>Which tools do JavaScript developers use?</h2>
+  <p>The JavaScript ecosystem is enormous, but the tooling generally falls into three core categories:</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Runtimes</div><p>Node.js, Bun, and Deno let JavaScript run outside the browser, powering servers, CLIs, and build tooling.</p></div>
+    <div class="tech-card"><div class="tc-name">Frameworks &amp; Libraries</div><p>React, Vue, and Angular for the front end; Express and NestJS for building back-end APIs.</p></div>
+    <div class="tech-card"><div class="tc-name">Package &amp; Build Tools</div><p>npm, pnpm, and Vite manage dependencies and bundle code for fast, production-ready delivery.</p></div>
+  </div>
+
+  <h2>What skills does a JavaScript developer need?</h2>
+  <p>A JavaScript developer needs a solid grasp of core language concepts, since those are the common thread across every framework or library built on top of them. Here are the critical skills:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Variables &amp; Scope</b> Understanding var, let, const, and how block, function, and global scope interact.</div>
+    <div class="skill-row"><b>2. Data Types &amp; Structures</b> Working confidently with primitives, objects, arrays, and collections like Map and Set.</div>
+    <div class="skill-row"><b>3. Type Casting &amp; Equality</b> Knowing how implicit coercion works and the differences between ==, ===, and Object.is.</div>
+    <div class="skill-row"><b>4. Control Flow</b> Writing clear loops, conditionals, and robust error handling with try/catch.</div>
+    <div class="skill-row"><b>5. Functions &amp; Closures</b> Defining functions, understanding closures, recursion, and lexical scoping.</div>
+    <div class="skill-row"><b>6. The 'this' Keyword</b> Knowing how 'this' resolves in methods, functions, arrow functions, and event handlers.</div>
+    <div class="skill-row"><b>7. Asynchronous JavaScript</b> Working fluently with promises, async/await, and understanding the event loop.</div>
+    <div class="skill-row"><b>8. Classes &amp; OOP</b> Building reusable object blueprints using classes and prototypal inheritance.</div>
+    <div class="skill-row"><b>9. Modules</b> Structuring code with ES Modules and understanding interop with CommonJS.</div>
+    <div class="skill-row"><b>10. Debugging &amp; Memory</b> Using DevTools effectively and understanding the memory lifecycle to avoid leaks.</div>
+  </div>
+  <p>Once these fundamentals are solid, most developers pair them with at least one framework — such as React for interactive front ends or NestJS for structured back-end APIs — and layer on web standards, the DOM API, and basic UX understanding if working on the front end.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">What skills does a JavaScript developer need? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">A solid grasp of core JavaScript concepts — functions, operators, and data structures — plus experience with at least one framework or library, such as React for interactive websites or NestJS for backends. Back-end focused developers should also know API design, data modeling, and database querying, while front-end developers should understand web standards, the DOM API, and basic UX.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is JavaScript hard to learn? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">JavaScript is one of the more approachable languages to start with — you can run it instantly in any browser console with no setup. The syntax basics are easy to pick up, but mastering trickier parts like closures, the event loop, and 'this' binding takes deliberate practice over time.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is JavaScript different from Java? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Despite the similar name, they're unrelated languages. Java is a statically typed, compiled language commonly used for enterprise backends and Android apps. JavaScript is dynamically typed, interpreted, and was built specifically to run inside web browsers before expanding to servers and beyond.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is JavaScript different from TypeScript? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">TypeScript is a superset of JavaScript that adds static type checking on top of the same core language. Any valid JavaScript is (almost) valid TypeScript, but TypeScript catches type-related bugs at compile time and then compiles down to plain JavaScript to actually run.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How long does it take to learn JavaScript? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">You can learn the basics — variables, functions, loops — in a few weeks of consistent practice. Becoming comfortable with asynchronous patterns, closures, and a framework typically takes a few months, while true fluency across the ecosystem is an ongoing process that continues throughout your career.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">361<span style="color:var(--amber)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

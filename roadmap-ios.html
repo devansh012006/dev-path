@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>iOS Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider — for "or" choices */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node (pick one) */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">iOS Developer</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🍎</div>
+    <div class="rm-title">
+      <h1>iOS Developer</h1>
+      <p>Step by step guide to becoming an iOS Developer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span> 
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="swift-foundations" data-desc="Start with the language and fundamentals every iOS app is built on top of.">1. Swift & Programming Foundations</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core Foundations</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="swift-basics" data-desc="Swift basics cover variables, optionals, closures, and control flow — Apple's modern language for all its platforms.">Swift Basics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="oop-protocols" data-desc="Structs, classes, and protocols shape how Swift and SwiftUI code is organized and composed.">OOP & Protocols <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dsa-basics-ios" data-desc="Core data structures and algorithms help you reason about performance in lists, collections, and app logic.">Data Structures & Algorithms <span class="dot"></span></div>
+        <div class="rm-chip" data-id="git-version-control-ios" data-desc="Git tracks changes to your project and enables collaboration through GitHub, GitLab, or Bitbucket.">Git & Version Control <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Foundational Checkpoints</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cp-hello-world-ios" data-desc="Set up Xcode and ship a basic Hello World app to the Simulator or a device.">Checkpoint — Hello World App <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-swift-fluency" data-desc="Write a small Swift playground using structs, optionals, and closures without referencing docs.">Checkpoint — Swift Fluency <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="ios-fundamentals" data-desc="Learn the building blocks every iOS app is assembled from, and how Xcode ties it all together." >2. iOS Fundamentals & Xcode</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>App Lifecycle</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="app-scene-delegate" data-desc="The App and Scene Delegates handle app-wide setup and manage multiple windows or scenes.">App & Scene Delegate <span class="dot"></span></div>
+        <div class="rm-chip" data-id="view-controllers" data-desc="View Controllers manage a screen's view hierarchy and respond to user interaction in UIKit apps.">View Controllers <span class="dot"></span></div>
+        <div class="rm-chip" data-id="app-lifecycle-states" data-desc="Understanding active, background, and suspended states is key to handling interruptions gracefully.">App Lifecycle States <span class="dot"></span></div>
+        <div class="rm-chip" data-id="storyboards-nibs" data-desc="Storyboards and Nibs are the legacy visual UI system, still found in many existing UIKit codebases.">Storyboards & Nibs <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Xcode & Tooling</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="xcode-ide" data-desc="Xcode is Apple's official IDE for writing, building, and debugging iOS apps.">Xcode IDE <span class="dot"></span></div>
+        <div class="rm-chip" data-id="interface-builder" data-desc="Interface Builder provides a visual editor for laying out storyboard-based UIKit screens.">Interface Builder <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="simulator-debugging" data-desc="The iOS Simulator and Xcode's debugger let you run and step through app behavior without a physical device.">Simulator & Debugging <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-build-configured" data-desc="Configure build schemes and targets for a multi-environment Xcode project.">Checkpoint — Build Configured <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="ui-swiftui" data-desc="Build the interfaces users actually see and touch, using Apple's modern declarative UI toolkit." >3. UI & SwiftUI</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Choose Your UI Approach</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="swiftui" data-desc="SwiftUI is Apple's modern, declarative UI framework and the default choice for new apps in 2026.">SwiftUI</div>
+        <div class="rm-node" data-id="uikit" data-desc="UIKit is the mature, imperative UI framework still used across many existing production iOS codebases.">UIKit (Legacy)</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>SwiftUI Essentials</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="view-protocol" data-desc="The View protocol is the foundation every SwiftUI screen is built from, composed of small reusable pieces.">View Protocol & Composition <span class="dot"></span></div>
+        <div class="rm-chip" data-id="state-property-wrappers" data-desc="@State, @Binding, and @Observable drive how SwiftUI automatically updates when data changes.">State & Property Wrappers <span class="dot"></span></div>
+        <div class="rm-chip" data-id="layouts-modifiers-ios" data-desc="Stacks and modifiers arrange and style views into adaptive, responsive layouts.">Layouts & Modifiers <span class="dot"></span></div>
+        <div class="rm-chip" data-id="navigation-lists" data-desc="NavigationStack and List power the multi-screen flows and scrollable content in most real apps.">Navigation & Lists <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="networking-data" data-desc="Connect your app to the outside world and give it somewhere to actually store data." >4. Networking & Data</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Networking & Storage</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="urlsession-combine" data-desc="URLSession fetches data over the network, often paired with Combine for reactive data streams.">URLSession & Combine <span class="dot"></span></div>
+        <div class="rm-chip" data-id="codable-json" data-desc="Codable lets Swift types encode and decode JSON automatically with minimal boilerplate.">Codable & JSON <span class="dot"></span></div>
+        <div class="rm-chip" data-id="swiftdata" data-desc="SwiftData is Apple's modern, Swift-native persistence framework and the preferred choice for new apps.">SwiftData <span class="dot"></span></div>
+        <div class="rm-chip" data-id="core-data" data-desc="Core Data is the mature, battle-tested persistence framework still common in existing production apps.">Core Data <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-data-fetched-persisted" data-desc="Build a screen that fetches data from a network API and persists it locally with SwiftData.">Checkpoint — Data Fetched & Persisted</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="architecture-concurrency" data-desc="Structure your app so it stays maintainable and safe as it grows beyond a single screen." >5. Architecture & Concurrency</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Architecture Patterns</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="mvvm-ios" data-desc="MVVM separates UI state from business logic through an ObservableObject, the most common SwiftUI architecture.">MVVM <span class="dot"></span></div>
+        <div class="rm-chip" data-id="repository-pattern-ios" data-desc="The Repository Pattern provides a single, clean source of truth for data across network and local sources.">Repository Pattern <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dependency-injection-ios" data-desc="Dependency injection wires dependencies cleanly across the app, keeping components testable.">Dependency Injection <span class="dot"></span></div>
+        <div class="rm-chip" data-id="coordinator-pattern" data-desc="The Coordinator Pattern centralizes navigation logic outside of individual views or view controllers.">Coordinator Pattern <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Concurrency</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="swift-concurrency" data-desc="async/await lets you write asynchronous code that reads like straightforward, sequential Swift.">Swift Concurrency (async/await) <span class="dot"></span></div>
+        <div class="rm-chip" data-id="actors-data-race" data-desc="Actors and Swift 6's strict concurrency checking make data race safety a compiler-enforced guarantee.">Actors & Data Race Safety <span class="dot"></span></div>
+        <div class="rm-chip" data-id="gcd" data-desc="Grand Central Dispatch is the lower-level queue system that async/await is built on top of.">Grand Central Dispatch <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-concurrency-fluent" data-desc="Refactor a completion-handler-based network call into async/await and verify it under strict concurrency.">Checkpoint — Concurrency Fluent <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="testing-quality-ios" data-desc="Verify your app actually works, and keep it working as you keep shipping changes." >6. Testing & Quality</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Testing</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="xctest-unit" data-desc="XCTest validates individual functions and view models in isolation from the UI.">XCTest Unit Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="xcuitest" data-desc="XCUITest automates interacting with and asserting on a running app's UI.">UI Testing (XCUITest) <span class="dot"></span></div>
+        <div class="rm-chip" data-id="mocking-ios" data-desc="Test doubles and mocks isolate the code under test from real network or database dependencies.">Mocking & Test Doubles <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-tests-passing-ios" data-desc="Write unit and UI tests covering a view model and its corresponding screen.">Checkpoint — Tests Passing <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-quality-app-ios" data-desc="Ship a small app with a real test suite covering both business logic and UI behavior.">Checkpoint — Tested App Shipped</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="publishing-advanced-ios" data-desc="Round out your skill set with what it takes to actually ship an app and keep it running well in production." >7. Publishing & Advanced Topics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Beyond the Basics</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="app-store-connect" data-desc="App Store Connect and TestFlight are required steps to distribute and beta-test an app with real users.">App Store Connect & TestFlight <span class="dot"></span></div>
+        <div class="rm-chip" data-id="instruments-performance" data-desc="Xcode's Instruments tools help diagnose memory leaks, slow launches, and dropped frames.">Performance & Instruments <span class="dot"></span></div>
+        <div class="rm-chip" data-id="push-notifications" data-desc="Push notifications re-engage users through Apple Push Notification service integration.">Push Notifications <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="apple-intelligence" data-desc="On-device frameworks like Core ML and Apple Intelligence APIs bring machine learning features directly into apps.">Apple Intelligence & Core ML <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-ios-mastered" data-desc="Achieve full-cycle mastery: build, architect, test, and publish a real iOS app end to end.">Checkpoint — iOS Developer Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is iOS Development?</h2>
+  <p>iOS development is the process of building apps for Apple's iPhone and iPad platform, using Swift and Apple's frameworks. It involves designing screens, wiring up navigation and data, and shipping something people actually install from the App Store. The role is often lumped in with general software engineering, but it has its own quirks — iOS apps are <strong>not the same</strong> as web or desktop apps, thanks to a strict lifecycle model and Apple's tightly controlled review and distribution process.</p>
+  <p>Modern tooling like SwiftUI and Xcode help turn a design into a working screen quickly, which is what lets a solo developer or small team ship a <strong>polished, native app</strong>.</p>
+
+  <h2>What does an iOS Developer actually do?</h2>
+  <p>An iOS developer's work spans the full journey from writing Swift to publishing on the App Store — building UI with SwiftUI, wiring it to a view model, fetching and persisting data, and testing that it all holds together. The end goal is always the same: ship a fast, reliable app that respects Apple's platform conventions and passes App Store review.</p>
+  <p>With a foundation in both Swift and Apple's app lifecycle model, developers use frameworks like Combine and SwiftData to keep apps maintainable as they grow. The role sits at the intersection of UI craft and systems thinking — a beautiful screen is only useful once it survives backgrounding, memory pressure, and a flaky network.</p>
+
+  <h2>Which tools do iOS Developers use?</h2>
+  <p>iOS developers typically start with Swift and Xcode to write and run code, move into SwiftUI and architecture patterns to structure the app, and finish with testing and App Store Connect tooling to ship it reliably.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">UI Layer</div><p>Builds declarative screens and navigation using SwiftUI, stacks, and modifiers.</p></div>
+    <div class="tech-card"><div class="tc-name">Data Layer</div><p>Fetches and persists data using URLSession for networking and SwiftData for local storage.</p></div>
+    <div class="tech-card"><div class="tc-name">Architecture Layer</div><p>Structures the app using MVVM, dependency injection, and Swift Concurrency.</p></div>
+  </div>
+
+  <h2>What skills does an iOS Developer need?</h2>
+  <p>This roadmap targets beginners looking to build a practical, hireable skill set. Beyond basic computer literacy, these are the checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Swift Fluency</b> Writing idiomatic Swift with optionals, closures, and protocol-oriented code.</div>
+    <div class="skill-row"><b>2. App Lifecycle</b> Understanding the App and Scene Delegate, and how iOS manages app states.</div>
+    <div class="skill-row"><b>3. SwiftUI</b> Building declarative UIs with views, state, and modifiers.</div>
+    <div class="skill-row"><b>4. Navigation</b> Wiring multiple screens together with NavigationStack and lists.</div>
+    <div class="skill-row"><b>5. Networking & Storage</b> Fetching data with URLSession and persisting it locally with SwiftData.</div>
+    <div class="skill-row"><b>6. Architecture (MVVM)</b> Separating UI, state, and business logic into testable layers.</div>
+    <div class="skill-row"><b>7. Swift Concurrency</b> Using async/await and actors to handle background work safely.</div>
+    <div class="skill-row"><b>8. Dependency Injection</b> Wiring dependencies cleanly across the app for testability.</div>
+    <div class="skill-row"><b>9. Testing</b> Writing unit and UI tests that catch regressions before users do.</div>
+    <div class="skill-row"><b>10. Publishing</b> Signing, profiling, and releasing an app through App Store Connect.</div>
+  </div>
+  <p>Use the checkpoints as milestones, and build a small app at each one — a real, installable project is what proves the skill.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">Is iOS Development a good career choice? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes. iPhone users represent a disproportionate share of app spending worldwide, so demand for developers who can build and maintain native iOS apps stays consistently high. The platform also keeps evolving with tools like SwiftUI and Apple Intelligence, keeping the work both challenging and rewarding.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What qualifications do I need to be an iOS Developer? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">There's no single required qualification. What matters most is demonstrable skill with Swift, SwiftUI, and app architecture. A portfolio of published or well-documented apps on GitHub usually carries more weight than a specific degree.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I teach myself iOS Development? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes, many working iOS developers are self-taught. The core tools — Swift, Xcode, and SwiftUI — all have strong free official documentation and Apple sample projects. Consistent practice building and shipping real apps matters more than the learning path you choose.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Should I learn SwiftUI or UIKit first? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">SwiftUI is Apple's recommended, modern approach and the default choice for new apps in 2026. UIKit is the mature, imperative system, still worth recognizing since many existing production codebases use it, but not where a beginner should start today.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

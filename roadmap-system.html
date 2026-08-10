@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>System Design Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--violet);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.4);color:var(--violet)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(45,212,191,.15);color:var(--teal);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--violet),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--violet)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:1.1rem}
+
+/* COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(139,92,246,.08),rgba(79,126,255,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="#">Roadmaps</a>
+    <a href="#">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="#">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="#">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">System Design</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🏗️</div>
+    <div class="rm-title">
+      <h1>System Design</h1>
+      <p>Step by step guide to learning System Design and Architecture in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('Projects demo — coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Case Studies
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Interviewer demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      Mock Interview <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<!-- ROADMAP TOOLBAR -->
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- ROADMAP CANVAS -->
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <!-- 1. Basics -->
+    <div class="rm-node" data-id="basics" data-desc="Understand the high-level goals of system design: building scalable, reliable, and maintainable systems.">System Design Basics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core Metrics</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="perf-vs-scalability" data-desc="Performance is about solving one request quickly. Scalability is about handling many requests simultaneously."><span class="dot"></span>Performance vs Scalability</div>
+        <div class="rm-chip" data-id="latency-throughput" data-desc="Latency: time to process a single request. Throughput: number of requests processed over time."><span class="dot"></span>Latency vs Throughput</div>
+        <div class="rm-chip" data-id="avail-consistency" data-desc="Availability: system uptime. Consistency: all nodes see the same data at the same time."><span class="dot"></span>Availability vs Consistency</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 2. Fundamental Theorems -->
+    <div class="rm-node" data-id="theorems" data-desc="The mathematical and logical rules that govern distributed systems.">Fundamental Theorems</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Distributed Systems Rules</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Essential</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cap-theorem" data-desc="Consistency, Availability, Partition Tolerance. You can only strictly guarantee two out of three in a distributed system."><span class="dot"></span>CAP Theorem</div>
+        <div class="rm-chip" data-id="pacelc" data-desc="An extension of CAP. If there is a Partition (P), choose A or C. Else (E), choose Latency (L) or Consistency (C)."><span class="dot"></span>PACELC Theorem</div>
+        <div class="rm-chip" data-id="acid" data-desc="Atomicity, Consistency, Isolation, Durability. Traditional properties of relational database transactions."><span class="dot"></span>ACID Properties</div>
+        <div class="rm-chip" data-id="base" data-desc="Basically Available, Soft state, Eventual consistency. The alternative to ACID, common in NoSQL systems."><span class="dot"></span>BASE Properties</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 3. Network & Proxies -->
+    <div class="rm-node" data-id="networking" data-desc="How components talk to each other over the internet and how traffic is managed and distributed.">Networking & Proxies</div>
+    <div class="rm-connector"></div>
+    
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Traffic Management</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="dns" data-desc="Domain Name System translates human-readable domain names into IP addresses."><span class="dot"></span>DNS</div>
+        <div class="rm-chip" data-id="load-balancing" data-desc="Distributing incoming network traffic across multiple servers. Learn L4 (Transport) vs L7 (Application) load balancing."><span class="dot"></span>Load Balancers</div>
+        <div class="rm-chip" data-id="reverse-proxy" data-desc="A server that sits in front of web servers and forwards client requests to them (e.g., NGINX)."><span class="dot"></span>Reverse Proxy</div>
+        <div class="rm-chip" data-id="api-gateway" data-desc="A single entry point for all clients. Handles routing, rate limiting, authentication, and logging."><span class="dot"></span>API Gateway</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 4. Caching -->
+    <div class="rm-node" data-id="caching" data-desc="Storing copies of frequently accessed data in a temporary storage location for faster retrieval.">Caching</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Caching Strategies</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Crucial</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cdn" data-desc="Content Delivery Network. A geographically distributed network of servers to deliver static content faster."><span class="dot"></span>CDN</div>
+        <div class="rm-chip" data-id="server-caching" data-desc="Storing database query results or rendered pages in memory (e.g., Redis, Memcached)."><span class="dot"></span>Server-side Caching</div>
+        <div class="rm-chip" data-id="cache-eviction" data-desc="Policies for removing data when cache is full: LRU (Least Recently Used), LFU, FIFO."><span class="dot"></span>Cache Eviction Policies</div>
+        <div class="rm-chip" data-id="cache-patterns" data-desc="Write-through, Write-behind, Cache-aside patterns."><span class="dot"></span>Write/Read Patterns</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 5. Databases -->
+    <div class="rm-node" data-id="databases" data-desc="How to scale the persistence layer when a single database server is no longer enough.">Database Scaling</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Scaling Data</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="relational-nosql" data-desc="When to use SQL (ACID, structured) vs NoSQL (flexible, horizontally scalable)."><span class="dot"></span>SQL vs NoSQL</div>
+        <div class="rm-chip" data-id="replication" data-desc="Master-Slave or Master-Master replication to improve read throughput and fault tolerance."><span class="dot"></span>Database Replication</div>
+        <div class="rm-chip" data-id="sharding" data-desc="Splitting a large database horizontally across multiple servers (Partitioning)."><span class="dot"></span>Sharding / Partitioning</div>
+        <div class="rm-chip" data-id="consistent-hashing" data-desc="A distributed hashing scheme used to minimize reorganization when nodes are added or removed."><span class="dot"></span>Consistent Hashing</div>
+        <div class="rm-chip" data-id="indexes" data-desc="Optimizing search speed via B-trees, Hash indexes, and inverted indexes."><span class="dot"></span>Indexes</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 6. Communication -->
+    <div class="rm-node" data-id="communication" data-desc="How microservices and clients communicate efficiently over a network.">Communication Protocols</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>APIs & Transports</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="rest-rpc" data-desc="REST (Resource-oriented over HTTP) vs RPC (Action-oriented, e.g., gRPC)."><span class="dot"></span>REST vs RPC / gRPC</div>
+        <div class="rm-chip" data-id="graphql" data-desc="A query language for APIs that lets clients request exactly the data they need."><span class="dot"></span>GraphQL</div>
+        <div class="rm-chip" data-id="polling-websockets" data-desc="Techniques for real-time data: Short Polling, Long Polling, Server-Sent Events (SSE), and WebSockets."><span class="dot"></span>Polling & WebSockets</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 7. Messaging -->
+    <div class="rm-node" data-id="messaging" data-desc="Decoupling services and handling heavy processing asynchronously.">Message Brokers & Queues</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Asynchronous Architecture</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="message-queues" data-desc="Point-to-point communication where a message is consumed once (e.g., RabbitMQ, SQS)."><span class="dot"></span>Message Queues</div>
+        <div class="rm-chip" data-id="pub-sub" data-desc="Publish-Subscribe pattern where messages are broadcast to multiple subscribers."><span class="dot"></span>Pub/Sub</div>
+        <div class="rm-chip" data-id="event-streaming" data-desc="Log-based messaging for high-throughput event processing (e.g., Apache Kafka)."><span class="dot"></span>Event Streaming (Kafka)</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 8. Architecture Patterns -->
+    <div class="rm-node" data-id="arch-patterns" data-desc="High-level structural design patterns for modern software systems.">Architecture Patterns</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Design Structures</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="monolith" data-desc="A unified, single executable application. Easy to start, hard to scale independently."><span class="dot"></span>Monolith</div>
+        <div class="rm-chip" data-id="microservices" data-desc="Independently deployable, loosely coupled services organized around business capabilities."><span class="dot"></span>Microservices</div>
+        <div class="rm-chip" data-id="event-driven" data-desc="Services communicate via events, enabling highly decoupled and scalable workflows."><span class="dot"></span>Event-Driven Architecture</div>
+        <div class="rm-chip" data-id="serverless" data-desc="Relying on managed services (FaaS like AWS Lambda) where infrastructure is completely abstracted."><span class="dot"></span>Serverless <span class="opt">Optional</span></div>
+      </div>
+    </div>
+
+  </div><!-- /rm-track -->
+</div><!-- /roadmap-canvas -->
+
+<!-- NODE DETAIL POPOVER -->
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head">
+    <h4 id="ndTitle"></h4>
+    <button class="nd-close" onclick="closeDetail()">✕</button>
+  </div>
+  <p class="nd-desc" id="ndDesc"></p>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="closeDetail()">Dismiss</button>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+  <h2>What is System Design?</h2>
+  <p>System Design is the process of defining the architecture, components, modules, interfaces, and data for a system to satisfy specified requirements. It bridges the gap between raw code and large-scale, enterprise applications capable of serving millions of users smoothly.</p>
+
+  <h2>Why is System Design important?</h2>
+  <p>As applications grow from hundreds to millions of users, single-server setups fail. A developer must know how to scale applications effectively. System design provides the blueprint for handling:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>High Traffic</b> — Managing millions of simultaneous requests using load balancers and horizontal scaling.</div>
+    <div class="skill-row"><b>High Availability</b> — Ensuring the system stays online 99.99% of the time, even when servers crash.</div>
+    <div class="skill-row"><b>Data Growth</b> — Handling terabytes or petabytes of data via database sharding, replication, and caching.</div>
+    <div class="skill-row"><b>Latency Reduction</b> — Serving users faster via Content Delivery Networks (CDNs) and distributed caching (Redis).</div>
+  </div>
+
+  <h2>Common System Design Tools</h2>
+  <p>Modern system design relies on a suite of battle-tested open-source and cloud infrastructure tools.</p>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tc-name">NGINX / HAProxy</div>
+      <p style="color:var(--muted)">Industry standards for reverse proxying and Layer 7 load balancing.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Redis / Memcached</div>
+      <p style="color:var(--muted)">In-memory key-value stores used for high-speed server caching and session management.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Apache Kafka</div>
+      <p style="color:var(--muted)">A distributed event streaming platform for high-throughput, fault-tolerant messaging.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">PostgreSQL</div>
+      <p style="color:var(--muted)">A powerful, open-source object-relational database system known for reliability and ACID compliance.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Cassandra / DynamoDB</div>
+      <p style="color:var(--muted)">Highly scalable NoSQL databases optimized for high availability and massive write throughput.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">AWS / GCP / Azure</div>
+      <p style="color:var(--muted)">Cloud providers offering managed services (S3, RDS, Lambda) to build distributed architectures easily.</p>
+    </div>
+  </div>
+</article>
+
+<!-- FAQ -->
+<section>
+  <div class="faq-wrap">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:1rem">Frequently Asked Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to know System Design for junior roles? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Usually, no. System design interviews are primarily for mid-level and senior engineering roles. However, understanding basic concepts like load balancing, caching, and database replication will make you stand out massively as a junior developer.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How do I prepare for a System Design interview? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Start by mastering the building blocks (Caching, DB Scaling, Queues). Then, practice designing real-world applications (e.g., "Design Twitter", "Design Uber", or "Design a URL Shortener"). Focus on clarifying requirements, doing back-of-the-envelope capacity estimations, creating a high-level design, and then diving into bottlenecks.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Should I use Microservices for my side project? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">Almost certainly not. Microservices introduce enormous operational complexity (network latency, distributed data management, complex deployments). For new projects, start with a well-structured Monolith. You can extract microservices later if a specific component actually requires independent scaling.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the CAP theorem in simple terms? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">It states that a distributed data store can only provide two of three guarantees: Consistency (every read receives the most recent write), Availability (every request receives a non-error response), and Partition tolerance (the system works despite network drops). Because network partitions (P) are unavoidable, you must choose between C and A.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does it take to learn this roadmap? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">If you already have some backend experience, you can learn the theoretical concepts in 1-2 months. However, true mastery of system design comes from practical experience—building, breaking, and scaling systems in production environments over several years.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">361<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="#">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// FAQ ACCORDION
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ROADMAP NODE PROGRESS
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

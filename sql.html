@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SQL Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(79,126,255,.15);color:var(--blue);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--blue);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:300px;padding-bottom:1.1rem}
+
+/* COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="#">Roadmaps</a>
+    <a href="#">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="#">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="#">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">SQL & Databases</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🗄️</div>
+    <div class="rm-title">
+      <h1>SQL Developer</h1>
+      <p>Step by step guide to mastering SQL and Relational Databases in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('Projects demo — coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Practice DBs
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('Query Analyzer demo — coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      Query Analyzer <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<!-- ROADMAP TOOLBAR -->
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<!-- ROADMAP CANVAS -->
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <!-- 1. Database Basics -->
+    <div class="rm-node" data-id="db-basics" data-desc="Understand what databases are, how data is stored in tables, and the fundamental concepts of relational database management systems.">Database Basics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core Concepts</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Essential</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="what-is-db" data-desc="Learn the difference between flat files and databases, and understand why databases are critical for modern applications."><span class="dot"></span>What is a Database?</div>
+        <div class="rm-chip" data-id="relational-model" data-desc="Understand the relational model: tables, rows (records), and columns (attributes)."><span class="dot"></span>The Relational Model</div>
+        <div class="rm-chip" data-id="dbms-rdbms" data-desc="Learn what a Database Management System is and how Relational DBMSs (like PostgreSQL or MySQL) differ from NoSQL."><span class="dot"></span>DBMS vs RDBMS</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 2. Basic Queries (CRUD) -->
+    <div class="rm-node" data-id="basic-queries" data-desc="Master the fundamentals of interacting with data: Create, Read, Update, and Delete.">Basic Queries (CRUD)</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Data Manipulation</h3><span class="rm-branch-tag" style="background:rgba(16,185,129,.12);color:var(--mint)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="select" data-desc="The SELECT statement is used to retrieve data from a database. Learn aliasing with AS and basic syntax."><span class="dot"></span>SELECT Statements</div>
+        <div class="rm-chip" data-id="where" data-desc="Filter records based on specified conditions using WHERE, AND, OR, NOT, IN, and BETWEEN."><span class="dot"></span>Filtering Data (WHERE)</div>
+        <div class="rm-chip" data-id="order-by" data-desc="Sort your result set in ascending or descending order using ORDER BY. Limit results with LIMIT or TOP."><span class="dot"></span>Sorting (ORDER BY)</div>
+        <div class="rm-chip" data-id="insert-update-delete" data-desc="Modify data in your tables using INSERT INTO to add, UPDATE to change, and DELETE to remove rows."><span class="dot"></span>INSERT, UPDATE, DELETE</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 3. Aggregation & Grouping -->
+    <div class="rm-node" data-id="aggregation" data-desc="Summarize and analyze large datasets by grouping records and performing mathematical operations.">Aggregation & Grouping</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Summarizing Data</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="aggregate-functions" data-desc="Perform calculations on multiple rows using functions like COUNT(), SUM(), AVG(), MIN(), and MAX()."><span class="dot"></span>Aggregate Functions</div>
+        <div class="rm-chip" data-id="group-by" data-desc="The GROUP BY statement groups rows that have the same values into summary rows, often used with aggregate functions."><span class="dot"></span>GROUP BY</div>
+        <div class="rm-chip" data-id="having" data-desc="The HAVING clause was added to SQL because the WHERE keyword cannot be used with aggregate functions."><span class="dot"></span>HAVING Clause</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 4. Joins -->
+    <div class="rm-node" data-id="joins" data-desc="Relational databases split data across multiple tables. Joins allow you to combine them back together for querying.">Working with Joins</div>
+    <div class="rm-connector"></div>
+    
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Combining Tables</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Crucial</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="inner-join" data-desc="Returns records that have matching values in both tables. The most common type of join."><span class="dot"></span>INNER JOIN</div>
+        <div class="rm-chip" data-id="left-right-join" data-desc="LEFT JOIN returns all records from the left table, and the matched records from the right table (and vice-versa for RIGHT)."><span class="dot"></span>LEFT & RIGHT JOIN</div>
+        <div class="rm-chip" data-id="full-outer-join" data-desc="Returns all records when there is a match in either left or right table."><span class="dot"></span>FULL OUTER JOIN</div>
+        <div class="rm-chip" data-id="cross-self-join" data-desc="CROSS JOIN returns the Cartesian product. A Self Join is a regular join, but the table is joined with itself."><span class="dot"></span>CROSS & Self Joins</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 5. Advanced Querying -->
+    <div class="rm-node" data-id="advanced-queries" data-desc="Write complex logic to extract highly specific data, calculate running totals, and format output.">Advanced Querying</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Complex Logic</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="subqueries" data-desc="A query nested inside another query (e.g., inside a SELECT, FROM, or WHERE clause)."><span class="dot"></span>Subqueries</div>
+        <div class="rm-chip" data-id="cte" data-desc="Common Table Expressions (WITH clause) make complex queries easier to read and maintain by creating temporary result sets."><span class="dot"></span>CTEs (WITH)</div>
+        <div class="rm-chip" data-id="window-functions" data-desc="Perform calculations across a set of table rows related to the current row using OVER(), PARTITION BY, and RANK()."><span class="dot"></span>Window Functions</div>
+        <div class="rm-chip" data-id="set-operations" data-desc="Combine the result sets of two or more SELECT statements using UNION, INTERSECT, and EXCEPT."><span class="dot"></span>Set Operations (UNION)</div>
+        <div class="rm-chip" data-id="case-statements" data-desc="Add conditional IF-THEN-ELSE logic directly inside your SELECT statements using CASE WHEN."><span class="dot"></span>CASE Statements</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 6. Database Design -->
+    <div class="rm-node" data-id="db-design" data-desc="Learn how to architect tables, enforce data integrity, and ensure your database is optimized for relationships.">Database Design & DDL</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Table Structures</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="ddl" data-desc="Data Definition Language: CREATE TABLE, ALTER TABLE, and DROP TABLE commands to build structures."><span class="dot"></span>DDL Statements</div>
+        <div class="rm-chip" data-id="keys" data-desc="Primary Keys uniquely identify a record. Foreign Keys establish a link between data in two tables."><span class="dot"></span>Primary & Foreign Keys</div>
+        <div class="rm-chip" data-id="constraints" data-desc="Enforce rules at the database level using UNIQUE, NOT NULL, CHECK, and DEFAULT constraints."><span class="dot"></span>Constraints</div>
+        <div class="rm-chip" data-id="normalization" data-desc="Organizing columns and tables to reduce data redundancy and improve data integrity (1NF, 2NF, 3NF)."><span class="dot"></span>Normalization</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 7. Performance -->
+    <div class="rm-node" data-id="performance" data-desc="As datasets grow to millions of rows, inefficient queries will cripple applications. Learn how to optimize.">Performance & Optimization</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Scaling Queries</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="indexes" data-desc="Indexes are special lookup tables that the database search engine can use to speed up data retrieval."><span class="dot"></span>Indexes (B-Tree)</div>
+        <div class="rm-chip" data-id="explain" data-desc="Use EXPLAIN or EXPLAIN ANALYZE to view the query execution plan and find bottlenecks (e.g., sequential scans)."><span class="dot"></span>Execution Plans (EXPLAIN)</div>
+        <div class="rm-chip" data-id="query-optimization" data-desc="Best practices: avoiding SELECT *, indexing foreign keys, and minimizing nested subqueries."><span class="dot"></span>Query Optimization</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <!-- 8. Transactions -->
+    <div class="rm-node" data-id="transactions" data-desc="Ensure database consistency when multiple operations must succeed or fail as a single unit.">Transactions & Concurrency</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Data Safety</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Essential</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="acid" data-desc="Atomicity, Consistency, Isolation, Durability — the foundational guarantees of a reliable transaction system."><span class="dot"></span>ACID Properties</div>
+        <div class="rm-chip" data-id="tcl" data-desc="Transaction Control Language: BEGIN, COMMIT (save changes), and ROLLBACK (undo changes if an error occurs)."><span class="dot"></span>COMMIT & ROLLBACK</div>
+        <div class="rm-chip" data-id="isolation-levels" data-desc="Understand how concurrent transactions interact (Read Uncommitted, Read Committed, Repeatable Read, Serializable)."><span class="dot"></span>Isolation Levels <span class="opt">Optional</span></div>
+      </div>
+    </div>
+
+  </div><!-- /rm-track -->
+</div><!-- /roadmap-canvas -->
+
+<!-- NODE DETAIL POPOVER -->
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head">
+    <h4 id="ndTitle"></h4>
+    <button class="nd-close" onclick="closeDetail()">✕</button>
+  </div>
+  <p class="nd-desc" id="ndDesc"></p>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="closeDetail()">Dismiss</button>
+  </div>
+</div>
+
+<!-- ARTICLE -->
+<article class="article">
+  <h2>What is SQL?</h2>
+  <p>SQL (Structured Query Language) is the standard language used to communicate with and manipulate relational databases. Whether you are building web applications, performing data analysis, or designing backend architectures, SQL is the fundamental tool for reading, writing, and updating structured data.</p>
+
+  <h2>Why learn SQL?</h2>
+  <p>Despite the rise of NoSQL databases, SQL remains the dominant standard for storing and retrieving data in the software industry. It is highly sought after across multiple roles:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>Backend Developers</b> — Write queries and design the tables that power APIs and web applications.</div>
+    <div class="skill-row"><b>Data Analysts / Scientists</b> — Extract, clean, and summarize massive datasets to find business insights.</div>
+    <div class="skill-row"><b>Product Managers</b> — Write basic queries to pull user metrics without waiting for engineers.</div>
+    <div class="skill-row"><b>QA Engineers</b> — Verify that applications are writing data to the database correctly during testing.</div>
+  </div>
+
+  <h2>Popular Relational Databases (RDBMS)</h2>
+  <p>While standard SQL syntax is mostly universal, different database engines offer unique features, performance profiles, and slight syntax variations (dialects).</p>
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tc-name">PostgreSQL</div>
+      <p style="color:var(--muted)">The world's most advanced open-source database. Known for strict standards compliance, advanced data types (JSONB), and reliability.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">MySQL</div>
+      <p style="color:var(--muted)">Incredibly popular, especially in the PHP ecosystem (WordPress). Fast, reliable, and widely supported by cloud providers.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">SQLite</div>
+      <p style="color:var(--muted)">A serverless, file-based database. Perfect for mobile apps, local development, and small-scale projects.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">SQL Server</div>
+      <p style="color:var(--muted)">Microsoft's enterprise database solution. Highly integrated with the .NET ecosystem and Azure.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Oracle</div>
+      <p style="color:var(--muted)">A heavy-duty commercial database used by large enterprises for massive, complex transactional systems.</p>
+    </div>
+    <div class="tech-card">
+      <div class="tc-name">Cloud Native DBs</div>
+      <p style="color:var(--muted)">Services like Amazon Aurora, Google Cloud SQL, or Neon that offer serverless, auto-scaling SQL environments.</p>
+    </div>
+  </div>
+</article>
+
+<!-- FAQ -->
+<section>
+  <div class="faq-wrap">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin-bottom:1rem">Frequently Asked Questions</h2>
+    <div id="faqList">
+      <div class="faq-item">
+        <div class="faq-q">Do I need to be good at math to learn SQL? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">No! SQL is a declarative language, meaning you tell the database <em>what</em> data you want, not exactly <em>how</em> to get it. If you understand basic logic (AND, OR) and set theory concepts (like overlapping circles in a Venn diagram for JOINs), you can master SQL. Basic arithmetic is only needed for aggregate functions like averages and sums.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Which SQL dialect should I learn first? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">PostgreSQL or MySQL are the best starting points. About 80-90% of standard SQL (ANSI SQL) translates perfectly across all engines. Once you learn the core concepts (SELECT, JOIN, GROUP BY) in PostgreSQL, switching to MySQL, SQL Server, or SQLite is just a matter of Googling minor syntax differences.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">How long does it take to learn SQL? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">You can learn the basics of querying (CRUD operations) in a weekend. Becoming proficient with Joins, Grouping, and basic aggregations takes about 2-4 weeks of practice. Mastering database design, performance tuning (Indexes), and advanced queries (CTEs, Window Functions) usually takes a few months of real-world application.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">Should I use an ORM or write raw SQL? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">ORMs (like Prisma, Hibernate, or Entity Framework) are fantastic for speeding up development and preventing SQL injection. However, you <em>must</em> learn raw SQL first. When an ORM generates a slow query or fails to execute complex logic, you will need to know how to write and optimize the underlying SQL to fix it.</div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">What is the difference between SQL and NoSQL? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+        <div class="faq-a">SQL databases (Relational) store data in rigid tables with strict schemas and relate them using keys—perfect for financial systems or complex relationships. NoSQL databases (like MongoDB) store data in flexible, document-like formats (JSON) and scale horizontally very well, making them ideal for rapid prototyping or unstructured data.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMMUNITY -->
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="#">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// FAQ ACCORDION
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ROADMAP NODE PROGRESS
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

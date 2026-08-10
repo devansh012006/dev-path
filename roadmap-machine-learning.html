@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Machine Learning Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider — for "or" choices */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node (pick one) */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Machine Learning</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🧠</div>
+    <div class="rm-title">
+      <h1>Machine Learning Engineer</h1>
+      <p>Step by step guide to becoming a Machine Learning Engineer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="ml-foundations" data-desc="Start with the math and programming that everything else in machine learning is built on top of.">1. Mathematical & Programming Foundations</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Core Math</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="linear-algebra" data-desc="Linear algebra covers vectors, matrices, and transformations that underlie nearly every ML model.">Linear Algebra <span class="dot"></span></div>
+        <div class="rm-chip" data-id="calculus-ml" data-desc="Calculus, especially derivatives and gradients, explains how models learn through optimization.">Calculus <span class="dot"></span></div>
+        <div class="rm-chip" data-id="probability-stats" data-desc="Probability and statistics underpin how models handle uncertainty and evaluate performance.">Probability & Statistics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="optimization-basics" data-desc="Optimization methods like gradient descent are how models actually minimize error during training.">Optimization Basics <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Programming Toolkit</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="python-ml" data-desc="Python is the standard language for machine learning, backed by an extensive scientific computing ecosystem.">Python <span class="dot"></span></div>
+        <div class="rm-chip" data-id="numpy-ml" data-desc="NumPy provides fast array operations that power nearly every numerical computation in ML code.">NumPy <span class="dot"></span></div>
+        <div class="rm-chip" data-id="pandas-ml" data-desc="Pandas handles loading, cleaning, and exploring tabular datasets before they reach a model.">Pandas <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-foundations" data-desc="Implement a small numerical routine, like gradient descent, from scratch using NumPy alone.">Checkpoint — Foundations <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="data-layer" data-desc="Before a model can learn anything, the data feeding it needs to be understood, cleaned, and shaped correctly.">2. Data Handling & Feature Engineering</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Preparing Data</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="eda-ml" data-desc="Exploratory data analysis surfaces patterns, distributions, and issues in a dataset before modeling begins.">Exploratory Data Analysis <span class="dot"></span></div>
+        <div class="rm-chip" data-id="data-cleaning-ml" data-desc="Cleaning handles missing values, duplicates, and inconsistent records that would otherwise mislead a model.">Data Cleaning <span class="dot"></span></div>
+        <div class="rm-chip" data-id="feature-engineering" data-desc="Feature engineering creates and transforms input variables to make patterns easier for a model to learn.">Feature Engineering <span class="dot"></span></div>
+        <div class="rm-chip" data-id="feature-scaling" data-desc="Scaling and normalization put features on comparable ranges so no single feature dominates training.">Feature Scaling <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-data-ready" data-desc="Take a raw dataset through cleaning, exploration, and feature engineering until it's ready for modeling.">Checkpoint — Model-ready Dataset</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="classical-ml" data-desc="Learn the classical algorithms that remain the right choice for a huge share of real-world problems." >3. Classical Machine Learning</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Supervised Learning</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="linear-regression" data-desc="Linear regression predicts a continuous value as a weighted sum of input features.">Linear Regression <span class="dot"></span></div>
+        <div class="rm-chip" data-id="logistic-regression" data-desc="Logistic regression predicts class probabilities for binary and multi-class classification tasks.">Logistic Regression <span class="dot"></span></div>
+        <div class="rm-chip" data-id="decision-trees" data-desc="Decision trees split data on feature thresholds to form interpretable prediction rules.">Decision Trees & Random Forests <span class="dot"></span></div>
+        <div class="rm-chip" data-id="gradient-boosting" data-desc="Gradient boosting methods like XGBoost combine many weak trees into a strong predictive model.">Gradient Boosting (XGBoost) <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Unsupervised Learning</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="clustering-ml" data-desc="Clustering algorithms like k-means group similar data points without labeled outcomes.">Clustering (k-means) <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dim-reduction" data-desc="Dimensionality reduction techniques like PCA compress features while preserving meaningful structure.">Dimensionality Reduction (PCA) <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="model-evaluation" data-desc="Evaluation metrics like precision, recall, and RMSE quantify how well a model actually performs.">Model Evaluation Metrics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-classical" data-desc="Train, evaluate, and compare several classical models on the same dataset.">Checkpoint — Classical Model Built <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="deep-learning" data-desc="Move into neural networks, the foundation behind modern computer vision, NLP, and generative AI." >4. Deep Learning</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Neural Network Fundamentals</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="neural-net-basics" data-desc="Neural networks stack layers of weighted connections and activation functions to learn complex patterns.">Neural Network Basics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="backpropagation" data-desc="Backpropagation computes gradients through the network so weights can be updated to reduce error.">Backpropagation <span class="dot"></span></div>
+        <div class="rm-chip" data-id="activation-functions" data-desc="Activation functions like ReLU introduce the non-linearity that lets networks model complex relationships.">Activation Functions <span class="dot"></span></div>
+        <div class="rm-chip" data-id="regularization-ml" data-desc="Regularization techniques like dropout reduce overfitting so models generalize to new data.">Regularization & Dropout <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Framework Choice</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="pytorch-fw" data-desc="PyTorch is the dominant framework in research and increasingly in production, prized for its flexibility.">PyTorch</div>
+        <div class="rm-node" data-id="tensorflow-fw" data-desc="TensorFlow, with Keras, offers a mature ecosystem for training and deploying models at scale.">TensorFlow / Keras</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Network Architectures</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cnn-arch" data-desc="Convolutional neural networks specialize in recognizing spatial patterns, widely used in computer vision.">CNNs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="rnn-arch" data-desc="Recurrent networks and LSTMs process sequential data by carrying information across time steps.">RNNs & LSTMs <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="transformers-arch" data-desc="Transformers use attention mechanisms to model relationships across a sequence, powering modern LLMs.">Transformers <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-deep-learning" data-desc="Train a neural network on a real dataset and document the architecture choices you made.">Checkpoint — Neural Net Trained <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="applied-ml" data-desc="Apply deep learning to specific domains where machine learning has the most real-world impact today." >5. Applied Domains</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Specializations</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="nlp-domain" data-desc="Natural language processing covers text classification, embeddings, and language modeling tasks.">Natural Language Processing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cv-domain" data-desc="Computer vision covers image classification, object detection, and segmentation tasks.">Computer Vision <span class="dot"></span></div>
+        <div class="rm-chip" data-id="recommender-systems" data-desc="Recommender systems predict which items a user is likely to want based on past behavior.">Recommender Systems <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="reinforcement-learning" data-desc="Reinforcement learning trains agents to take actions that maximize long-term reward through trial and error.">Reinforcement Learning <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="mlops-layer" data-desc="Move a trained model out of a notebook and into a system that runs reliably, scales, and can be monitored." >6. MLOps & Deployment</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Production Machine Learning</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Infrastructure</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="experiment-tracking" data-desc="Experiment tracking tools like MLflow log parameters, metrics, and artifacts across training runs.">Experiment Tracking (MLflow) <span class="dot"></span></div>
+        <div class="rm-chip" data-id="model-serving" data-desc="Model serving exposes a trained model as an API endpoint that applications can call in real time.">Model Serving <span class="dot"></span></div>
+        <div class="rm-chip" data-id="model-monitoring" data-desc="Monitoring tracks prediction quality and data drift once a model is live in production.">Model Monitoring <span class="dot"></span></div>
+        <div class="rm-chip" data-id="containerization-ml" data-desc="Docker packages a model and its dependencies into a portable, reproducible deployment unit.">Docker & Containerization <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-ml-mastered" data-desc="Achieve full-cycle mastery: train, evaluate, and deploy a machine learning model as a monitored production service.">Checkpoint — ML Engineer Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is Machine Learning?</h2>
+  <p>Machine Learning is the branch of AI focused on building systems that learn patterns from data instead of following explicitly programmed rules. A Machine Learning Engineer takes those techniques and turns them into working, production-grade systems — training models, evaluating them rigorously, and deploying them so they keep performing reliably over time.</p>
+  <p>This is a deeper, more mathematical path than applied AI engineering: you're expected to understand <strong>why</strong> a model behaves the way it does, not just how to call an existing one through an API.</p>
+
+  <h2>What does a Machine Learning Engineer actually do?</h2>
+  <p>Day to day, an ML Engineer explores and prepares data, selects and trains models suited to the problem, and evaluates them against meaningful metrics rather than gut feeling. That could mean a classical algorithm like gradient boosting for tabular data, or a deep neural network for images, text, or sequences.</p>
+  <p>Once a model performs well offline, the job shifts toward production concerns: packaging the model, serving it behind an API, and monitoring it for degradation as real-world data drifts away from the training distribution.</p>
+
+  <h2>Which tools do Machine Learning Engineers use?</h2>
+  <p>The toolkit spans classical statistics libraries, deep learning frameworks, and the infrastructure needed to run models reliably at scale.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Modeling Layer</div><p>Trains classical and deep models using scikit-learn, PyTorch, or TensorFlow depending on the problem.</p></div>
+    <div class="tech-card"><div class="tc-name">Data Layer</div><p>Cleans and engineers features from raw data using pandas, NumPy, and exploratory analysis.</p></div>
+    <div class="tech-card"><div class="tc-name">Production Layer</div><p>Tracks experiments, serves models, and monitors drift using MLflow, Docker, and observability tooling.</p></div>
+  </div>
+
+  <h2>What skills does a Machine Learning Engineer need?</h2>
+  <p>This roadmap targets developers with some programming background who want to specialize in ML. Beyond general coding skills, these are the checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Mathematical Foundations</b> Comfort with linear algebra, calculus, and probability as applied to models.</div>
+    <div class="skill-row"><b>2. Numerical Programming</b> Implementing algorithms from scratch using NumPy to understand how they work.</div>
+    <div class="skill-row"><b>3. Data Preparation</b> Cleaning, exploring, and engineering features from raw datasets.</div>
+    <div class="skill-row"><b>4. Classical Modeling</b> Training and evaluating regression, tree-based, and clustering models.</div>
+    <div class="skill-row"><b>5. Neural Networks</b> Building and training networks with backpropagation and regularization.</div>
+    <div class="skill-row"><b>6. Framework Fluency</b> Working confidently in PyTorch or TensorFlow for deep learning projects.</div>
+    <div class="skill-row"><b>7. Architecture Selection</b> Choosing CNNs, RNNs, or Transformers appropriately for the data type.</div>
+    <div class="skill-row"><b>8. Domain Application</b> Applying deep learning to NLP, computer vision, or another specialization.</div>
+    <div class="skill-row"><b>9. Experiment Tracking</b> Logging runs, metrics, and artifacts to compare models systematically.</div>
+    <div class="skill-row"><b>10. Production Deployment</b> Serving, containerizing, and monitoring a model in a live environment.</div>
+  </div>
+  <p>Move through the checkpoints in order, and reproduce the math by hand at least once — it builds an intuition that using a library alone won't give you.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">Is Machine Learning a good career choice? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes. Machine learning underpins recommendation systems, fraud detection, forecasting, and generative AI across nearly every industry. Demand remains high for engineers who can train, evaluate, and reliably deploy models rather than just call a pre-built API.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need a strong math background to start? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">You need working familiarity with linear algebra, calculus, and probability, but not a math degree. Many practitioners build this understanding alongside hands-on projects rather than studying theory in isolation first.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is Machine Learning different from AI Engineering? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Machine Learning Engineers train and fine-tune models from data, requiring a deeper grasp of statistics and model internals. AI Engineers primarily integrate pre-trained models and APIs into applications. The two roles increasingly overlap, but ML is the more research-adjacent, mathematical path.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Should I learn classical ML or jump straight to deep learning? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Start with classical ML. It's faster to train, easier to interpret, and often the right tool for tabular data. It also builds the evaluation habits and intuition that make deep learning far easier to learn afterward.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UX Design Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">UX Design</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">🎨</div>
+    <div class="rm-title">
+      <h1>UX Design</h1>
+      <p>Step by step guide to becoming a UX Designer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span> 
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="ux-foundations" data-desc="Start with why people act the way they do — every design decision downstream builds on this.">1. UX Foundations & Human Behavior</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Human Decision Making</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="nudge-theory" data-desc="Nudge Theory studies how small changes in choice architecture steer behavior without restricting options.">Nudge Theory <span class="dot"></span></div>
+        <div class="rm-chip" data-id="persuasive-tech" data-desc="Persuasive Technology looks at how products are intentionally designed to shape attitudes and behaviors.">Persuasive Technology <span class="dot"></span></div>
+        <div class="rm-chip" data-id="behavioral-economics" data-desc="Behavioral Economics explains why people often make decisions that deviate from purely rational choice.">Behavioral Economics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dual-process-theory" data-desc="Dual Process Theory separates fast, intuitive thinking from slow, deliberate reasoning — both shape UX.">Dual Process Theory <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Behavior Frameworks</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="fogg-behavior-model" data-desc="BJ Fogg's Behavior Model states behavior happens when Motivation, Ability, and a Prompt converge at the same moment.">BJ Fogg's Behavior Model <span class="dot"></span></div>
+        <div class="rm-chip" data-id="hook-model" data-desc="Nir Eyal's Hook Model describes a Trigger, Action, Variable Reward, Investment loop that builds habitual product use.">Nir Eyal's Hook Model <span class="dot"></span></div>
+        <div class="rm-chip" data-id="create-action-funnel" data-desc="The CREATE Action Funnel breaks the path to action into Cue, Reaction, Evaluation, Ability, Timing, and Execution.">CREATE Action Funnel <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-behavior-model" data-desc="Map a real product feature against BJ Fogg's Behavior Model and identify what's missing: motivation, ability, or a trigger.">Checkpoint — Behavior Model Applied <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="understand-product" data-desc="Before you design anything, get precise about what the product is for and who it's for." >2. Understanding the Product & Business</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Product Clarity</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="target-outcome" data-desc="Target Outcome defines the measurable result the product is meant to produce for its users or business.">Target Outcome <span class="dot"></span></div>
+        <div class="rm-chip" data-id="target-actor" data-desc="Target Actor identifies exactly who performs the behavior the design is trying to influence.">Target Actor <span class="dot"></span></div>
+        <div class="rm-chip" data-id="target-action" data-desc="Target Action is the single, specific behavior the design is meant to make easier or more likely.">Target Action <span class="dot"></span></div>
+        <div class="rm-chip" data-id="user-personas" data-desc="User Personas turn research findings into a memorable profile the whole team can design around.">Create User Personas <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Business Model</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="business-model-canvas" data-desc="The Business Model Canvas maps how a product creates, delivers, and captures value in one view.">Business Model Canvas <span class="dot"></span></div>
+        <div class="rm-chip" data-id="lean-canvas" data-desc="Lean Canvas adapts the Business Model Canvas for early-stage products, emphasizing problem and solution fit.">Lean Canvas <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="competitor-analysis" data-desc="Competitor Analysis surveys existing solutions to spot gaps and conventions worth following or breaking.">Competitor Analysis <span class="dot"></span></div>
+        <div class="rm-chip" data-id="swot-analysis" data-desc="SWOT Analysis weighs a product's Strengths, Weaknesses, Opportunities, and Threats before committing to a direction.">SWOT Analysis <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="user-research" data-desc="Ground every design decision in evidence about how real people actually think and behave." >3. User Research</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Research Methods</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="classifying-behavior" data-desc="Classifying Behavior sorts observed user actions into patterns that reveal habits, friction points, and motivations.">Classifying Behavior <span class="dot"></span></div>
+        <div class="rm-chip" data-id="user-interviews" data-desc="User Interviews surface qualitative context — the reasons and stories behind what people do.">User Interviews <span class="dot"></span></div>
+        <div class="rm-chip" data-id="usability-testing" data-desc="Usability Testing watches real people attempt real tasks to uncover where a design breaks down.">Usability Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-research-synthesis" data-desc="Run five short interviews on one task and synthesize the findings into three concrete design implications.">Checkpoint — Research Synthesis <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="conceptual-design" data-desc="Turn research into a concrete plan for what to build and in what order." >4. Conceptual Design</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Defining the Work</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="product-backlog" data-desc="A Product Backlog lists and prioritizes everything that still needs to be designed or built.">Create Product Backlog <span class="dot"></span></div>
+        <div class="rm-chip" data-id="user-stories" data-desc="User Stories frame requirements from the user's point of view: who, what, and why.">User Stories <span class="dot"></span></div>
+        <div class="rm-chip" data-id="ux-writing-clarity" data-desc="Keeping flows short, easy to understand, and visibly progressing is one of the most reliable UX wins available.">Progress & Clarity Principles <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="information-architecture" data-desc="Information Architecture organizes content and features so users can find their way without thinking hard about it.">Information Architecture <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Deliverables</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="customer-experience-map" data-desc="A Customer Experience Map plots every touchpoint a user has with a product, end to end.">Customer Experience Map <span class="dot"></span></div>
+        <div class="rm-chip" data-id="simple-flowchart" data-desc="A Simple Flowchart lays out the decision points and paths a user can take through a task.">Simple Flowchart <span class="dot"></span></div>
+        <div class="rm-chip" data-id="bpmn" data-desc="Business Process Model & Notation (BPMN) formally diagrams more complex, multi-actor processes.">BPMN <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-flow-mapped" data-desc="Diagram the end-to-end flow for one core user task, including every decision point and edge case.">Checkpoint — Flow Mapped <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="wireframing-prototyping" data-desc="Give the concept a shape people can actually look at, click through, and react to." >5. Wireframing & Prototyping</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Choose Your Design Tool</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="figma" data-desc="Figma is the most widely used, browser-based design and prototyping tool, built for real-time collaboration.">Figma</div>
+        <div class="rm-node" data-id="adobe-xd" data-desc="Adobe XD offers strong prototyping and animation features, integrated with the rest of the Adobe suite.">Adobe XD</div>
+      </div>
+      <div class="rm-or"><span>or</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="sketch" data-desc="Sketch is a long-standing vector design tool popular among Mac-based UI designers.">Sketch</div>
+        <div class="rm-node" data-id="balsamiq" data-desc="Balsamiq is built specifically for fast, deliberately rough low-fidelity wireframes.">Balsamiq</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Prototyping Essentials</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="good-layout-rules" data-desc="Good Layout Rules — hierarchy, spacing, and alignment — make an interface scannable before any color is applied.">Good Layout Rules <span class="dot"></span></div>
+        <div class="rm-chip" data-id="wireframing" data-desc="Wireframing sketches structure and flow at low fidelity, before visual design decisions are locked in.">Wireframing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="interactive-prototypes" data-desc="Interactive Prototypes link screens together so a design can be clicked through and tested like a real product.">Interactive Prototypes <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-clickable-prototype" data-desc="Build a clickable prototype covering one full user flow, from entry point to task completion.">Checkpoint — Clickable Prototype <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="ux-patterns-persuasion" data-desc="Apply proven interaction patterns that earn a user's attention and guide them toward action, without manipulating them." >6. UX Patterns & Persuasive Design</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Getting & Keeping Attention</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="call-to-action" data-desc="A clear Call to Action tells the user exactly what to do next and why it matters right now.">Call to Action <span class="dot"></span></div>
+        <div class="rm-chip" data-id="status-reports" data-desc="Status Reports keep users oriented by showing where they are and what's happened so far.">Status Reports <span class="dot"></span></div>
+        <div class="rm-chip" data-id="reminders-prompts" data-desc="Reminders and Planning Prompts bring users back at the right moment to continue an interrupted task.">Reminders & Prompts <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="gamification" data-desc="Gamification borrows game mechanics like progress and rewards to sustain engagement over time.">Gamification <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>UX Best Practices</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="clear-distractions" data-desc="Clearing the page of distractions keeps a user's attention on the one task the screen is meant to support.">Clear the Page of Distractions <span class="dot"></span></div>
+        <div class="rm-chip" data-id="social-proof" data-desc="Deploying social proof, like reviews or usage counts, builds trust by showing others have acted already.">Deploy Social Proof <span class="dot"></span></div>
+        <div class="rm-chip" data-id="avoid-choice-overload" data-desc="Avoiding choice overload keeps decisions simple so users don't stall out or abandon the task.">Avoid Choice Overload <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-pattern-audit" data-desc="Audit an existing screen against three UX best practices and redesign it to fix what's missing.">Checkpoint — Pattern Audit <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="testing-measuring" data-desc="Validate that the design actually changes behavior, then use what you learn to improve it." >7. Testing & Measuring Impact</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Validation</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="ab-testing" data-desc="Incremental A/B Testing compares two versions of a design against each other to see which performs better.">Incremental A/B Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="multivariate-testing" data-desc="Multivariate Testing measures how multiple design changes interact and affect outcomes together.">Multivariate Testing <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="gather-iterate" data-desc="Gathering lessons, prioritizing, and integrating them closes the loop between testing and the next design pass.">Gather, Prioritize & Integrate <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-test-designed" data-desc="Design and run an A/B test on a real interface change, then report which version won and why.">Checkpoint — Test Designed <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-ux-mastered" data-desc="Achieve full-cycle mastery: research, define, design, prototype, and validate a real product experience end to end.">Checkpoint — UX Designer Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is UX Design?</h2>
+  <p>UX design is the practice of shaping how a product feels to use — how easily someone can understand it, act on it, and get what they came for. It draws on psychology, business strategy, and visual craft, but the throughline is always <strong>the user's actual behavior</strong>, not just how a screen looks. A UX designer studies why people act the way they do, then shapes the product's structure and interactions to make the intended action feel obvious and easy.</p>
+  <p>Modern tools like Figma make it fast to turn research findings into a clickable prototype, which is what lets a designer <strong>test an idea with real users</strong> before a single line of production code gets written.</p>
+
+  <h2>What does a UX Designer actually do?</h2>
+  <p>A UX designer's work spans the full journey from understanding human decision-making to shipping a tested, validated flow — researching real users, mapping their journey, sketching wireframes, building interactive prototypes, and running tests to see what actually works. The end goal is always the same: reduce the friction between what a user wants and what the product asks of them.</p>
+  <p>With a foundation in both behavioral frameworks and business context, designers translate research into personas, journey maps, and low-fidelity wireframes before layering in visual and interaction design. The role sits at the intersection of empathy and rigor — a beautiful flow is only useful once real users have clicked through it and it held up.</p>
+
+  <h2>Which tools do UX Designers use?</h2>
+  <p>UX designers typically start with research and behavioral frameworks to understand the problem, move into wireframing and prototyping tools to give it shape, and finish with testing tools to validate their decisions with real data.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Research Layer</div><p>Gathers evidence through user interviews, usability testing, and behavior classification.</p></div>
+    <div class="tech-card"><div class="tc-name">Design Layer</div><p>Shapes wireframes and interactive prototypes using Figma, Adobe XD, Sketch, or Balsamiq.</p></div>
+    <div class="tech-card"><div class="tc-name">Validation Layer</div><p>Confirms decisions using A/B testing, multivariate testing, and iterative feedback loops.</p></div>
+  </div>
+
+  <h2>What skills does a UX Designer need?</h2>
+  <p>This roadmap targets beginners looking to build a practical, hireable skill set. Beyond basic design literacy, these are the checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Behavioral Frameworks</b> Applying models like BJ Fogg's Behavior Model and the Hook Model to real features.</div>
+    <div class="skill-row"><b>2. Product & Business Context</b> Defining target outcomes, actors, and actions before designing anything.</div>
+    <div class="skill-row"><b>3. User Research</b> Running interviews and usability tests, then synthesizing findings into decisions.</div>
+    <div class="skill-row"><b>4. Personas & Journey Mapping</b> Turning research into personas and end-to-end experience maps.</div>
+    <div class="skill-row"><b>5. Information Architecture</b> Organizing content and flows so users find their way without friction.</div>
+    <div class="skill-row"><b>6. Wireframing</b> Sketching low-fidelity layouts that focus on structure over polish.</div>
+    <div class="skill-row"><b>7. Prototyping</b> Building clickable, testable prototypes in Figma or a comparable tool.</div>
+    <div class="skill-row"><b>8. UX Patterns</b> Applying proven attention and action patterns like clear CTAs and social proof.</div>
+    <div class="skill-row"><b>9. Usability Testing</b> Watching real users attempt real tasks and identifying where they struggle.</div>
+    <div class="skill-row"><b>10. A/B Testing & Iteration</b> Validating design changes with data and feeding lessons back into the next pass.</div>
+  </div>
+  <p>Use the checkpoints as milestones, and apply each one to a real flow — a tested, working prototype is what proves the skill.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">Is UX Design a good career choice? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes. Nearly every digital product needs someone thinking deliberately about how users experience it, so demand for UX skills spans startups, agencies, and large tech companies alike. The field also keeps evolving with behavioral science and AI-assisted design tools, keeping the work both challenging and rewarding.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What qualifications do I need to become a UX Designer? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">There's no single required qualification. What matters most is demonstrable skill with research, wireframing, and prototyping tools like Figma. A portfolio of case studies showing your process from research to tested prototype usually carries more weight than a specific degree.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Should I learn UX Research or UI Visual Design first? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Research first. Understanding why users behave the way they do is what makes every later design decision — wireframes, patterns, visual polish — actually work. Starting with visual design before research tends to produce screens that look good but don't solve the right problem.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">360<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

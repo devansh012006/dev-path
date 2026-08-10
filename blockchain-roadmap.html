@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Blockchain Developer Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider — for "or" choices */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node (pick one) */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Blockchain Developer</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">⛓️</div>
+    <div class="rm-title">
+      <h1>Blockchain Developer</h1>
+      <p>Step by step guide to becoming a blockchain developer in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="blockchain-foundations" data-desc="Start with the fundamentals every blockchain developer needs: what a blockchain actually is, how it's structured, and why decentralization matters.">1. Blockchain Foundations</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Basic Blockchain Knowledge</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="what-is-blockchain" data-desc="A blockchain is an append-only, distributed ledger where records are grouped into cryptographically linked blocks.">What is Blockchain <span class="dot"></span></div>
+        <div class="rm-chip" data-id="decentralization" data-desc="Decentralization spreads control across many independent participants instead of a single trusted authority.">Decentralization <span class="dot"></span></div>
+        <div class="rm-chip" data-id="why-it-matters" data-desc="Removing central intermediaries enables trustless coordination, censorship resistance, and new financial primitives.">Why it Matters <span class="dot"></span></div>
+        <div class="rm-chip" data-id="blockchain-structure" data-desc="Blocks contain a header, transaction data, and a hash pointer to the previous block, forming an immutable chain.">Blockchain Structure <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Operations & Applications</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="basic-operations" data-desc="Core operations include creating transactions, validating blocks, and reaching consensus on the canonical chain.">Basic Blockchain Operations <span class="dot"></span></div>
+        <div class="rm-chip" data-id="applications-uses" data-desc="Blockchains power use cases beyond currency: supply chain tracking, identity, voting, and decentralized finance.">Applications and Uses <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cryptography" data-desc="Hash functions, digital signatures, and public-key cryptography secure transactions and prove ownership.">Cryptography <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-foundations" data-desc="Explain how a block is formed, hashed, and linked to its predecessor, and why that makes tampering detectable.">Checkpoint — Foundations Mastered <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>General Blockchain Knowledge</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="mining-incentives" data-desc="Mining and staking reward participants for securing the network and proposing valid new blocks.">Mining & Incentive Models <span class="dot"></span></div>
+        <div class="rm-chip" data-id="consensus-protocols" data-desc="Consensus protocols like Proof of Work and Proof of Stake let distributed nodes agree on one shared history.">Consensus Protocols <span class="dot"></span></div>
+        <div class="rm-chip" data-id="decentralization-trust" data-desc="Different chains trade off decentralization, security, and trust assumptions in different ways.">Decentralization vs Trust <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="blockchain-forking" data-desc="Forks occur when a chain's rules change, splitting the network into two paths — either temporarily or permanently.">Blockchain Forking <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Cryptocurrencies & Wallets</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cryptocurrencies" data-desc="Cryptocurrencies are native digital assets used to pay transaction fees and transfer value on a chain.">Cryptocurrencies <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cryptowallets" data-desc="Wallets store the private keys that prove ownership of on-chain assets and authorize transactions.">Cryptowallets <span class="dot"></span></div>
+        <div class="rm-chip" data-id="crypto-faucets" data-desc="Testnet faucets distribute free test tokens so developers can experiment without spending real funds.">Crypto Faucets <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-crypto-basics" data-desc="Set up a wallet, connect to a testnet, and request funds from a faucet to prepare for development.">Checkpoint — Wallet Set Up <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="blockchains-layer" data-desc="Understand the landscape of chains you can build on — EVM-compatible networks, alternative virtual machines, and the layer 2s built on top of them.">2. Blockchains & Interoperability</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>EVM-Based Blockchains</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="ethereum" data-desc="Ethereum introduced the smart contract virtual machine that most chains in this list are compatible with.">Ethereum <span class="dot"></span></div>
+        <div class="rm-chip" data-id="polygon" data-desc="Polygon is a low-fee, EVM-compatible scaling network popular for consumer-facing dApps.">Polygon <span class="dot"></span></div>
+        <div class="rm-chip" data-id="binance-smart-chain" data-desc="Binance Smart Chain offers fast, low-cost EVM-compatible transactions backed by a smaller validator set.">Binance Smart Chain <span class="dot"></span></div>
+        <div class="rm-chip" data-id="avalanche" data-desc="Avalanche uses a novel consensus protocol to offer fast finality across multiple interoperable subnets.">Avalanche <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="gnosis-chain" data-desc="Gnosis Chain is a stable, EVM-compatible chain often used for prediction markets and DAOs.">Gnosis Chain <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="fantom" data-desc="Fantom is a high-throughput, EVM-compatible chain built around a directed-acyclic-graph consensus layer.">Fantom <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Alternative Ecosystems</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="solana" data-desc="Solana is a high-throughput, non-EVM chain that uses Rust-based programs instead of Solidity smart contracts.">Solana <span class="dot"></span></div>
+        <div class="rm-chip" data-id="ton" data-desc="TON (The Open Network) is a sharded, high-speed chain built for messaging-scale throughput.">TON <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="moonbeam" data-desc="Moonbeam and Moonriver bring EVM compatibility to the Polkadot ecosystem's parachains.">Moonbeam / Moonriver <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="everscale-gosh" data-desc="Everscale and Gosh are TVM-based chains built for dynamic sharding and decentralized version control.">Everscale / Gosh <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Layer 2s & Oracles</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="arbitrum" data-desc="Arbitrum is an optimistic rollup that inherits Ethereum's security while offering cheaper, faster transactions.">Arbitrum <span class="dot"></span></div>
+        <div class="rm-chip" data-id="chainlink" data-desc="Chainlink is a decentralized oracle network that feeds real-world data into smart contracts securely.">Chainlink Oracles <span class="dot"></span></div>
+        <div class="rm-chip" data-id="hybrid-smart-contracts" data-desc="Hybrid smart contracts combine on-chain logic with off-chain oracle data to react to real-world events.">Hybrid Smart Contracts <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-chain-picked" data-desc="Pick a primary chain and get comfortable with its RPC endpoints, explorer, and testnet faucet.">Checkpoint — Chain Selected <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="smart-contracts-layer" data-desc="Learn to write, compile, and deploy the self-executing code that runs on-chain and defines how a dApp actually behaves.">3. Smart Contract Development</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Programming Languages</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="solidity" data-desc="Solidity is the dominant language for writing smart contracts on Ethereum and other EVM-compatible chains.">Solidity <span class="dot"></span></div>
+        <div class="rm-chip" data-id="vyper" data-desc="Vyper is a Python-like, security-focused alternative to Solidity for EVM smart contracts.">Vyper <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="rust-contracts" data-desc="Rust is used for smart contracts on non-EVM chains such as Solana, offering strong memory safety guarantees.">Rust <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-first-contract" data-desc="Write and compile a simple smart contract that stores and updates a value on-chain.">Checkpoint — First Contract <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Frameworks & Tooling</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="hardhat" data-desc="Hardhat is a JavaScript-based development environment for compiling, testing, and deploying Ethereum contracts.">Hardhat <span class="dot"></span></div>
+        <div class="rm-chip" data-id="foundry" data-desc="Foundry is a fast, Rust-based toolkit for writing tests and scripts directly in Solidity.">Foundry <span class="dot"></span></div>
+        <div class="rm-chip" data-id="truffle" data-desc="Truffle was one of the earliest full smart contract development frameworks, covering compiling and migrations.">Truffle <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="brownie" data-desc="Brownie is a Python-based framework for testing and deploying smart contracts, popular for scripting.">Brownie <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Supporting Infrastructure</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="erc-tokens" data-desc="ERC standards like ERC-20 and ERC-721 define common interfaces for fungible and non-fungible tokens.">ERC Tokens <span class="dot"></span></div>
+        <div class="rm-chip" data-id="ides" data-desc="Browser-based IDEs like Remix let you write, compile, and deploy contracts without local setup.">IDEs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="decentralized-storage" data-desc="Decentralized storage networks like IPFS and Arweave host off-chain data referenced by smart contracts.">Decentralized Storage <span class="dot"></span></div>
+        <div class="rm-chip" data-id="version-control" data-desc="Git and hosted services like GitHub, GitLab, and Bitbucket track and share smart contract source code.">Git & Version Control <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="testing-security-layer" data-desc="Smart contracts are immutable once deployed and often control real funds — rigorous testing and security review aren't optional." >4. Testing, Security & Deployment</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Testing & Deployment</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Infrastructure</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="unit-tests" data-desc="Unit tests verify individual contract functions behave correctly in isolation, including edge cases.">Unit Tests <span class="dot"></span></div>
+        <div class="rm-chip" data-id="integration-tests" data-desc="Integration tests check that multiple contracts interact correctly as a complete system.">Integration Tests <span class="dot"></span></div>
+        <div class="rm-chip" data-id="code-coverage" data-desc="Code coverage tools report which lines and branches of a contract your test suite actually exercises.">Code Coverage <span class="dot"></span></div>
+        <div class="rm-chip" data-id="monitoring-upgrades" data-desc="Post-deployment monitoring and upgrade patterns like proxies let teams react to bugs after launch.">Monitoring & Upgrades <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Security Practices</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="threat-vectors" data-desc="Common threat vectors include reentrancy, integer overflow, and access control flaws in contract logic.">Common Threat Vectors <span class="dot"></span></div>
+        <div class="rm-chip" data-id="fuzz-static-analysis" data-desc="Fuzz testing and static analysis automatically probe contracts for unexpected inputs and known vulnerability patterns.">Fuzz Testing & Static Analysis <span class="dot"></span></div>
+        <div class="rm-chip" data-id="randomness-attacks" data-desc="On-chain randomness is predictable unless sourced carefully, making naive randomness a common attack surface.">Source of Randomness Attacks <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="openzeppelin" data-desc="OpenZeppelin provides audited, reusable contract libraries for tokens, access control, and security patterns.">OpenZeppelin <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Security Tools</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="slither" data-desc="Slither is a static analysis framework that flags common Solidity vulnerabilities before deployment.">Slither <span class="dot"></span></div>
+        <div class="rm-chip" data-id="mythx" data-desc="MythX runs automated security analysis on smart contracts as part of a CI pipeline.">MythX <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="echidna" data-desc="Echidna is a property-based fuzz tester that generates inputs to break your contract's invariants.">Echidna <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-security-audit" data-desc="Run a static analyzer and fuzz tester against a contract and resolve every finding before deploying.">Checkpoint — Security Reviewed <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="dapps-layer" data-desc="Combine smart contracts with a frontend to ship a decentralized application that real users can interact with.">5. Building dApps</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>dApp Applicability</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Use Cases</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="defi" data-desc="DeFi applications recreate lending, trading, and derivatives without traditional financial intermediaries.">DeFi <span class="dot"></span></div>
+        <div class="rm-chip" data-id="daos" data-desc="DAOs use on-chain voting and treasuries to let token holders govern a protocol collectively.">DAOs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="nfts" data-desc="NFTs represent unique, verifiable ownership of digital or physical assets on-chain.">NFTs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="payments-insurance" data-desc="On-chain payments and parametric insurance settle automatically once contract conditions are met.">Payments & Insurance <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Supporting Languages & Frameworks</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="js-python-go" data-desc="JavaScript, Python, and Go are the most common languages for building dApp backends and tooling.">JavaScript / Python / Go <span class="dot"></span></div>
+        <div class="rm-chip" data-id="react-frontend" data-desc="React is the most widely used frontend framework for building dApp user interfaces.">React <span class="dot"></span></div>
+        <div class="rm-chip" data-id="angular-vue" data-desc="Angular and Vue are alternative frontend frameworks also used to build dApp interfaces.">Angular / Vue <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-dapp-frontend" data-desc="Connect a frontend framework to a deployed contract and read and write on-chain state from the UI.">Checkpoint — Frontend Connected <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>dApp Lifecycle</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="dapp-architecture" data-desc="A dApp's architecture defines how frontend, contracts, and off-chain services communicate securely.">Architecture <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dapp-testing" data-desc="End-to-end dApp testing verifies the full flow from wallet connection to on-chain confirmation.">Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dapp-deployment" data-desc="Deploying a dApp means shipping contracts on-chain and hosting the frontend that talks to them.">Deployment <span class="dot"></span></div>
+        <div class="rm-chip" data-id="dapp-maintenance" data-desc="Ongoing maintenance covers contract upgrades, frontend updates, and responding to on-chain incidents.">Maintenance <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-dapp-shipped" data-desc="Ship a complete dApp end to end: a tested, secure contract paired with a working frontend that real users can use.">Checkpoint — dApp Shipped</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="infra-layer" data-desc="Learn the client libraries and node infrastructure that connect your application code to the blockchain itself.">6. Node Infrastructure & Client Libraries</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Node as a Service</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Infra</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="alchemy" data-desc="Alchemy provides managed node access, enhanced APIs, and monitoring for building on major chains.">Alchemy <span class="dot"></span></div>
+        <div class="rm-chip" data-id="infura" data-desc="Infura offers hosted Ethereum and IPFS nodes so you don't need to run your own infrastructure.">Infura <span class="dot"></span></div>
+        <div class="rm-chip" data-id="moralis" data-desc="Moralis bundles node access with indexed APIs for tokens, NFTs, and wallet activity.">Moralis <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="quicknode" data-desc="QuickNode provides fast, globally distributed RPC endpoints across many supported chains.">QuickNode <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Client Libraries & Nodes</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="ethersjs" data-desc="ethers.js is a lightweight JavaScript library for interacting with Ethereum-compatible contracts and wallets.">ethers.js <span class="dot"></span></div>
+        <div class="rm-chip" data-id="web3js" data-desc="web3.js is the original JavaScript library for reading and writing to Ethereum-compatible blockchains.">web3.js <span class="dot"></span></div>
+        <div class="rm-chip" data-id="geth-besu" data-desc="Geth and Besu are full Ethereum client implementations that can run and sync their own copy of the chain.">Geth / Besu <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="nethermind-substrate" data-desc="Nethermind is another Ethereum client, while Substrate is a framework for building custom blockchains.">Nethermind / Substrate <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="scaling-layer" data-desc="Understand how blockchains scale beyond their base layer throughput limits, and where the ecosystem is headed next.">7. Scaling & Future of Blockchain</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Building for Scale</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Advanced</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="state-payment-channels" data-desc="State and payment channels let two parties transact off-chain and settle only the final result on-chain.">State & Payment Channels <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="optimistic-rollups" data-desc="Optimistic rollups assume transactions are valid by default and use fraud proofs to catch bad ones.">Optimistic Rollups & Fraud Proofs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="zk-rollups" data-desc="ZK rollups use zero-knowledge proofs to cryptographically verify batches of transactions off-chain.">ZK Rollups & Zero Knowledge Proofs <span class="dot"></span></div>
+        <div class="rm-chip" data-id="validium-plasma" data-desc="Validium, Plasma, and sidechains trade some security guarantees for greater scalability.">Validium / Plasma / Sidechains <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Protocol Evolution</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="ethereum-2" data-desc="Ethereum's move to Proof of Stake and sharding aims to improve throughput without sacrificing decentralization.">Ethereum 2.0 <span class="dot"></span></div>
+        <div class="rm-chip" data-id="onchain-scaling" data-desc="On-chain scaling techniques increase base layer capacity directly, complementing layer 2 approaches.">On-Chain Scaling <span class="dot"></span></div>
+        <div class="rm-chip" data-id="blockchain-interoperability" data-desc="Bridges and interoperability protocols let assets and data move safely between separate blockchains.">Blockchain Interoperability <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-scaling-understood" data-desc="Explain the tradeoffs between optimistic and ZK rollups, and when you'd reach for each in a real system.">Checkpoint — Scaling Understood <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-blockchain-mastered" data-desc="Achieve full-cycle mastery: design, secure, deploy, and scale smart contracts and dApps across the blockchain ecosystem.">Checkpoint — Blockchain Developer Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is a Blockchain Developer?</h2>
+  <p>A Blockchain Developer designs, builds, and secures applications that run on decentralized networks, from the smart contracts that encode business logic to the frontends users interact with. The role splits into two complementary tracks: core protocol work on the blockchain itself, and application-layer work building the smart contracts and dApps that run on top of it.</p>
+  <p>In practice, that means a Blockchain Developer is the <strong>bridge between cryptographic infrastructure and shipped software</strong>: writing immutable contract logic, wiring it to real-world data through oracles, and giving users a safe, understandable way to interact with on-chain systems.</p>
+
+  <h2>What does a Blockchain Developer actually do?</h2>
+  <p>Day to day, you'll write and test smart contracts in Solidity or another contract language, deploy them to a testnet or mainnet, and connect a frontend using a client library so users can send transactions. You'll also decide which chain fits your use case, how to keep gas costs manageable, and how to defend contracts against well-known attack patterns before real funds are ever at risk.</p>
+  <p>A good starting point is picking one EVM-compatible chain, such as Ethereum or Polygon, and one development framework, such as Hardhat or Foundry, so you can ship a small contract end to end. From there, gradually add testing, security tooling, and a proper frontend as your applications grow more complex.</p>
+
+  <h2>Which tools and chains do Blockchain Developers use?</h2>
+  <p>Unlike traditional software roles, a large part of a Blockchain Developer's logic runs immutably on a public network rather than on servers you fully control. You'll typically pick a primary chain, add a smart contract framework for testing and deployment, and layer in client libraries and node providers once your application needs to talk to the chain from a frontend.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Contract Layer</div><p>Solidity, Vyper, or Rust contracts compiled and deployed with frameworks like Hardhat, Foundry, or Truffle.</p></div>
+    <div class="tech-card"><div class="tc-name">Infrastructure Layer</div><p>Node providers like Alchemy and Infura, plus client libraries like ethers.js and web3.js, connect apps to the chain.</p></div>
+    <div class="tech-card"><div class="tc-name">Security Layer</div><p>Static analyzers and fuzzers like Slither and Echidna, backed by audited libraries like OpenZeppelin.</p></div>
+  </div>
+
+  <h2>What skills does a Blockchain Developer need?</h2>
+  <p>This roadmap targets developers who already know how to code and want to specialize in decentralized systems. Beyond general programming skills, these are the practical checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Blockchain Fundamentals</b> Understanding how blocks, hashes, and consensus combine to form a tamper-evident ledger.</div>
+    <div class="skill-row"><b>2. Cryptography Basics</b> Working with hashing, digital signatures, and public-key cryptography that secure every transaction.</div>
+    <div class="skill-row"><b>3. Smart Contract Languages</b> Writing correct, gas-efficient contracts in Solidity or another contract language.</div>
+    <div class="skill-row"><b>4. Contract Frameworks</b> Compiling, testing, and deploying contracts with Hardhat, Foundry, or similar tooling.</div>
+    <div class="skill-row"><b>5. Security Auditing</b> Recognizing common threat vectors and running static analysis and fuzz testing before deployment.</div>
+    <div class="skill-row"><b>6. Token Standards</b> Implementing fungible and non-fungible tokens using established ERC interfaces.</div>
+    <div class="skill-row"><b>7. dApp Frontends</b> Connecting a React or similar frontend to contracts via ethers.js or web3.js.</div>
+    <div class="skill-row"><b>8. Node Infrastructure</b> Using node providers and client libraries to read and write on-chain data reliably.</div>
+    <div class="skill-row"><b>9. Oracles & Interoperability</b> Feeding real-world data into contracts and bridging assets across chains.</div>
+    <div class="skill-row"><b>10. Scaling Solutions</b> Understanding rollups, sidechains, and Layer 2 tradeoffs for high-throughput applications.</div>
+  </div>
+  <p>Move through the checkpoints in order, and build a small project at each stage — a working project proves the skill far better than reading about it does.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">Is blockchain development a good career choice? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">It can be, for developers who enjoy working close to the edge of a fast-moving, security-critical field. Demand fluctuates with the broader crypto market, but the underlying skills — cryptography, distributed systems, and rigorous testing — transfer well beyond any single chain or trend.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need to learn Solidity first? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">For most beginners, yes. Solidity and the EVM ecosystem have the largest community, the most tooling, and the most chains to deploy to, which makes early mistakes cheaper to debug and learn from.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How important is smart contract security? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Critical. Deployed contracts are often immutable and can hold real funds, so a single overlooked vulnerability can be irreversible. Treat testing, static analysis, and audits as a required part of shipping, not an optional final step.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Which chain should I build on first? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Start with Ethereum or an EVM-compatible testnet. It has the deepest documentation, the most mature tooling, and skills that carry over directly to other EVM chains like Polygon or Arbitrum.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>

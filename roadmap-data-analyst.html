@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Data Analyst Roadmap — DevPath</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07090F;--bg2:#0D1117;--surface:#111827;--card:#131C2E;--card2:#1A2540;
+  --border:#1E2D4A;--border2:#263652;
+  --blue:#4F7EFF;--violet:#8B5CF6;--teal:#2DD4BF;--amber:#F59E0B;--rose:#F43F5E;--mint:#10B981;
+  --text:#E8EDF8;--muted:#6B7FA8;--dim:#364055;
+  --r:10px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:rgba(7,9,15,0.85);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;text-decoration:none;color:var(--text);display:flex;align-items:center;gap:8px}
+.logo-mark{width:28px;height:28px;border-radius:7px;background:var(--blue);display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:16px;height:16px}
+.nav-r{display:flex;align-items:center;gap:1.5rem}
+.nav-r a{font-size:.85rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.nav-r a:hover{color:var(--text)}
+.btn-nav{background:var(--blue);color:#fff!important;padding:.38rem 1rem;border-radius:6px;font-weight:500;font-size:.85rem}
+
+/* BREADCRUMB */
+.crumbs{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 0;display:flex;align-items:center;gap:6px;font-size:.8rem;color:var(--muted)}
+.crumbs a{color:var(--muted);text-decoration:none;transition:color .2s}
+.crumbs a:hover{color:var(--blue)}
+.crumbs svg{width:13px;height:13px;color:var(--dim)}
+
+/* HEADER */
+.rm-header{max-width:1200px;margin:0 auto;padding:1.1rem 2rem 1.5rem;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:1rem;border-bottom:1px solid var(--border)}
+.rm-title-wrap{display:flex;align-items:center;gap:14px}
+.rm-icon{width:46px;height:46px;border-radius:11px;background:rgba(79,126,255,.12);border:1px solid rgba(79,126,255,.25);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.rm-title h1{font-family:'Space Grotesk',sans-serif;font-size:1.7rem;font-weight:700;letter-spacing:-.01em}
+.rm-title p{font-size:.85rem;color:var(--muted);margin-top:.15rem}
+.rm-actions{display:flex;gap:.6rem;flex-wrap:wrap}
+.rm-tab{display:inline-flex;align-items:center;gap:6px;font-size:.82rem;font-weight:500;padding:.5rem 1rem;border-radius:8px;border:1px solid var(--border2);color:var(--muted);text-decoration:none;transition:all .2s;background:var(--surface)}
+.rm-tab:hover{border-color:var(--blue);color:var(--text)}
+.rm-tab.active{background:rgba(79,126,255,.12);border-color:rgba(79,126,255,.4);color:var(--blue)}
+.rm-tab svg{width:14px;height:14px}
+.rm-tab .pill{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;background:rgba(139,92,246,.15);color:var(--violet);border-radius:4px;padding:1px 6px}
+
+/* ROADMAP CANVAS WRAP */
+.rm-toolbar{max-width:1200px;margin:0 auto;padding:1.5rem 2rem 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+.rm-legend{display:flex;gap:1.1rem;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:.74rem;color:var(--muted)}
+.leg-dot{width:9px;height:9px;border-radius:3px;flex-shrink:0}
+.rm-progress-info{font-size:.78rem;color:var(--muted);display:flex;align-items:center;gap:8px}
+.rm-progress-info strong{color:var(--mint);font-weight:600}
+.rm-bar-track{width:120px;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.rm-bar-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--mint));border-radius:3px;transition:width .4s}
+
+.roadmap-canvas{max-width:1200px;margin:1.5rem auto 0;padding:0 2rem 3rem;position:relative}
+.rm-track{position:relative;display:flex;flex-direction:column;align-items:center;gap:0;padding:1rem 0}
+
+/* spine connecting linear core topics */
+.rm-node{position:relative;z-index:2;width:280px;background:var(--card);border:1.5px solid var(--border2);border-radius:10px;padding:.85rem 1.1rem;text-align:center;cursor:pointer;transition:transform .15s,border-color .2s,background .2s;font-size:.88rem;font-weight:600;font-family:'Space Grotesk',sans-serif}
+.rm-node:hover{transform:translateY(-2px);border-color:var(--blue)}
+.rm-node.done{background:rgba(16,185,129,.08);border-color:rgba(16,185,129,.4);color:var(--mint)}
+.rm-node.done::after{content:'✓';margin-left:7px}
+.rm-connector{width:2px;height:28px;background:var(--border2);position:relative;z-index:1}
+.rm-connector.done{background:var(--mint)}
+
+/* branch group: a header node with a grid of children below it */
+.rm-branch{width:100%;max-width:980px;margin:0 auto;padding:1.6rem 0 0}
+.rm-branch-head{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.1rem}
+.rm-branch-head h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:700;color:var(--text)}
+.rm-branch-tag{font-size:.66rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:3px 9px;border-radius:99px}
+.rm-branch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:.65rem;position:relative}
+.rm-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:.65rem .85rem;font-size:.8rem;font-weight:500;color:var(--text);cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;text-align:left}
+.rm-chip:hover{border-color:var(--violet);background:var(--card2);transform:translateX(2px)}
+.rm-chip.done{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.06)}
+.rm-chip .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0}
+.rm-chip.done .dot{background:var(--mint)}
+.rm-chip .opt{font-size:.62rem;color:var(--dim);margin-left:auto;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+
+/* alt path divider — for "or" choices */
+.rm-or{display:flex;align-items:center;gap:10px;width:100%;max-width:280px;margin:.3rem 0}
+.rm-or::before,.rm-or::after{content:'';flex:1;height:1px;background:var(--border2)}
+.rm-or span{font-size:.68rem;color:var(--dim);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+
+/* side-by-side dual node (pick one) */
+.rm-fork{display:flex;gap:.9rem;justify-content:center;align-items:stretch;flex-wrap:wrap}
+.rm-fork .rm-node{width:230px}
+
+/* detail popover */
+.node-detail{position:fixed;z-index:500;width:300px;background:var(--card2);border:1px solid var(--border2);border-radius:12px;padding:1rem 1.1rem;box-shadow:0 20px 50px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(6px);transition:all .18s}
+.node-detail.show{opacity:1;visibility:visible;transform:translateY(0)}
+.nd-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem}
+.nd-head h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:700}
+.nd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1;padding:2px}
+.nd-close:hover{color:var(--text)}
+.nd-desc{font-size:.79rem;color:var(--muted);line-height:1.55;margin-bottom:.7rem}
+.nd-actions{display:flex;gap:.5rem}
+.nd-btn{flex:1;font-size:.76rem;font-weight:600;padding:.4rem .6rem;border-radius:6px;border:1px solid var(--border2);background:var(--surface);color:var(--text);cursor:pointer;transition:all .15s;text-align:center}
+.nd-btn:hover{border-color:var(--blue)}
+.nd-btn.primary{background:var(--mint);border-color:var(--mint);color:#06231a}
+.nd-btn.primary:hover{filter:brightness(1.1)}
+.nd-btn.undone{background:transparent}
+
+@media(max-width:760px){
+  .rm-node{width:100%;max-width:280px}
+  .rm-fork{flex-direction:column;align-items:center}
+  .rm-fork .rm-node{width:100%;max-width:280px}
+  .node-detail{width:88vw;left:6vw!important}
+}
+
+/* ARTICLE CONTENT */
+.article{max-width:760px;margin:0 auto;padding:1rem 2rem 3rem}
+.article h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;font-weight:700;margin:2.2rem 0 .9rem;letter-spacing:-.01em}
+.article h2:first-child{margin-top:0}
+.article p{font-size:.92rem;color:var(--muted);line-height:1.75;margin-bottom:.9rem}
+.article strong{color:var(--text);font-weight:600}
+.article a{color:var(--blue);text-decoration:none}
+.article a:hover{text-decoration:underline}
+.skill-list{display:flex;flex-direction:column;gap:.5rem;margin:1rem 0 1.2rem}
+.skill-row{display:flex;gap:10px;font-size:.88rem;color:var(--muted);line-height:1.6;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.7rem .9rem}
+.skill-row b{color:var(--text);font-weight:600;flex-shrink:0}
+
+/* TECH CARDS */
+.tech-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin:1.2rem 0 1.8rem}
+.tech-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:1rem}
+.tech-card .tc-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem;margin-bottom:.4rem}
+.tech-card p{font-size:.8rem;margin-bottom:0}
+@media(max-width:640px){.tech-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq-wrap{max-width:760px;margin:0 auto;padding:0 2rem 3rem}
+.faq-item{border-bottom:1px solid var(--border)}
+.faq-q{display:flex;justify-content:space-between;align-items:center;padding:1.1rem .2rem;cursor:pointer;font-size:.92rem;font-weight:600;color:var(--text)}
+.faq-q svg{width:16px;height:16px;color:var(--muted);transition:transform .25s;flex-shrink:0}
+.faq-item.open .faq-q svg{transform:rotate(180deg)}
+.faq-a{font-size:.86rem;color:var(--muted);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0 .2rem}
+.faq-item.open .faq-a{max-height:280px;padding-bottom:1.1rem}
+
+/* STATS / COMMUNITY */
+.community{max-width:1200px;margin:0 auto;padding:1rem 2rem 3rem}
+.community-card{background:linear-gradient(135deg,rgba(79,126,255,.08),rgba(139,92,246,.05));border:1px solid var(--border2);border-radius:16px;padding:2.2rem;text-align:center}
+.community-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:.4rem}
+.community-card p{font-size:.85rem;color:var(--muted);margin-bottom:1.8rem}
+.cstat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.cstat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.3rem}
+.cstat-n{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700}
+.cstat-l{font-size:.78rem;color:var(--muted);margin:.2rem 0 .8rem}
+.cstat-growth{font-size:.7rem;color:var(--mint);margin-bottom:.7rem}
+.cstat .btn-ghost{display:inline-block;font-size:.78rem;font-weight:600;padding:.45rem 1rem;border-radius:7px;border:1px solid var(--border2);color:var(--text);text-decoration:none;transition:border-color .2s}
+.cstat .btn-ghost:hover{border-color:var(--blue)}
+@media(max-width:700px){.cstat-row{grid-template-columns:1fr}}
+
+footer{border-top:1px solid var(--border);padding:2rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;color:var(--muted);font-size:.82rem;max-width:1200px;margin:0 auto}
+footer a{color:var(--muted);text-decoration:none}
+footer a:hover{color:var(--text)}
+.footer-links{display:flex;gap:1.5rem;flex-wrap:wrap}
+
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:.75rem 1.25rem;font-size:.82rem;color:var(--text);opacity:0;transform:translateY(12px);transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18l6-6-6-6"/></svg>
+    </div>
+    DevPath
+  </a>
+  <div class="nav-r">
+    <a href="index.html#explore">Roadmaps</a>
+    <a href="index.html#challenge">Challenges</a>
+    <a href="signin.html">Sign in</a>
+    <a href="signup.html" class="btn-nav">Sign up free</a>
+  </div>
+</nav>
+
+<div class="crumbs">
+  <a href="index.html">DevPath</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <a href="index.html#explore">Roadmaps</a>
+  <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+  <span style="color:var(--text)">Data Analyst</span>
+</div>
+
+<header class="rm-header">
+  <div class="rm-title-wrap">
+    <div class="rm-icon">📊</div>
+    <div class="rm-title">
+      <h1>Data Analyst</h1>
+      <p>Step by step guide to becoming a Data Analyst in 2026</p>
+    </div>
+  </div>
+  <div class="rm-actions">
+    <a href="#roadmap" class="rm-tab active">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+      Roadmap
+    </a>
+    <a href="#projects" class="rm-tab">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-6 4h6m2 4H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      Projects
+    </a>
+    <a href="#" class="rm-tab" onclick="toast('AI Tutor demo — chat coming soon');return false">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.99-2.387l-.548-.547z"/></svg>
+      AI Tutor <span class="pill">AI</span>
+    </a>
+  </div>
+</header>
+
+<div class="rm-toolbar" id="roadmap">
+  <div class="rm-legend">
+    <div class="leg-item"><span class="leg-dot" style="background:var(--surface);border:1px solid var(--border2)"></span> Not started</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--mint)"></span> Completed</div>
+    <div class="leg-item"><span class="leg-dot" style="background:var(--dim)"></span> Optional</div>
+  </div>
+  <div class="rm-progress-info">
+    <span>Your progress: <strong id="progressCount">0</strong>/<span id="progressTotal">0</span></span>
+    <div class="rm-bar-track"><div class="rm-bar-fill" id="progressBar" style="width:0%"></div></div>
+  </div>
+</div>
+
+<div class="roadmap-canvas">
+  <div class="rm-track" id="rmTrack">
+
+    <div class="rm-node" data-id="analyst-foundations" data-desc="Start with the raw material of the job: spreadsheets, basic statistics, and the mindset of turning messy data into a clear answer.">1. Data Analysis Foundations</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Spreadsheets & Core Math</h3><span class="rm-branch-tag" style="background:rgba(79,126,255,.12);color:var(--blue)">Core</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="excel-sheets" data-desc="Microsoft Excel and Google Sheets handle formulas, pivot tables, and lightweight charts for everyday analysis.">Excel & Google Sheets <span class="dot"></span></div>
+        <div class="rm-chip" data-id="descriptive-stats" data-desc="Descriptive statistics summarize a dataset using mean, median, variance, and distribution shape.">Descriptive Statistics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="data-types" data-desc="Recognizing categorical, numerical, and time-series data determines which analysis method actually applies.">Data Types & Structures <span class="dot"></span></div>
+        <div class="rm-chip" data-id="probability-basics" data-desc="Basic probability underpins hypothesis testing, confidence intervals, and understanding uncertainty in results.">Probability Basics <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Foundational Checkpoints</h3><span class="rm-branch-tag" style="background:rgba(245,158,11,.12);color:var(--amber)">Practice</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="cp-spreadsheet" data-desc="Build a spreadsheet model that summarizes a raw dataset using formulas and a pivot table.">Checkpoint — Spreadsheet Model <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-stats" data-desc="Calculate and interpret summary statistics for a real dataset, explaining what they mean in plain language.">Checkpoint — Summary Statistics <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="sql-layer" data-desc="Learn to pull exactly the data you need directly from where it lives — structured, relational databases." >2. SQL & Databases</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Querying Data</h3><span class="rm-branch-tag" style="background:rgba(244,63,94,.12);color:var(--rose)">Critical</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="sql-select" data-desc="SELECT statements filter, sort, and shape rows from a relational database table.">SELECT & Filtering <span class="dot"></span></div>
+        <div class="rm-chip" data-id="sql-joins" data-desc="JOINs combine rows from multiple tables based on related keys, the backbone of relational analysis.">Joins <span class="dot"></span></div>
+        <div class="rm-chip" data-id="sql-aggregation" data-desc="GROUP BY and aggregate functions like SUM and AVG summarize data across categories.">Aggregation & GROUP BY <span class="dot"></span></div>
+        <div class="rm-chip" data-id="sql-window" data-desc="Window functions calculate running totals, rankings, and comparisons without collapsing rows.">Window Functions <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Database Systems</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="postgresql-analyst" data-desc="PostgreSQL is a widely used relational database for storing and querying structured business data.">PostgreSQL <span class="dot"></span></div>
+        <div class="rm-chip" data-id="mysql-db" data-desc="MySQL is another common relational database engine used across many production systems.">MySQL <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="data-warehouses" data-desc="Data warehouses like BigQuery and Snowflake store large volumes of analytical data optimized for queries.">Data Warehouses <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="cp-sql" data-desc="Write multi-table SQL queries that answer real business questions from a sample database.">Checkpoint — SQL Querying <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cleaning-layer" data-desc="Raw data is rarely ready to analyze — clean, validate, and reshape it before drawing any conclusions." >3. Data Collection & Cleaning</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Cleaning & Preparation</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="data-cleaning" data-desc="Cleaning removes duplicates, fixes formatting issues, and handles missing or inconsistent values.">Data Cleaning <span class="dot"></span></div>
+        <div class="rm-chip" data-id="outlier-detection" data-desc="Outlier detection flags unusual values that could distort averages and skew conclusions.">Outlier Detection <span class="dot"></span></div>
+        <div class="rm-chip" data-id="data-transformation" data-desc="Transformation reshapes data — pivoting, merging, and normalizing — into an analysis-ready format.">Data Transformation <span class="dot"></span></div>
+        <div class="rm-chip" data-id="etl-basics" data-desc="ETL pipelines extract data from sources, transform it, and load it into a place ready for analysis.">ETL Basics <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-clean-data" data-desc="Take a genuinely messy, real-world dataset and turn it into a clean, analysis-ready table.">Checkpoint — Clean Dataset</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="programming-layer" data-desc="Move beyond spreadsheets into code, so you can automate analysis and handle datasets too large for manual work." >4. Programming for Analysis</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Language Choice</h3><span class="rm-branch-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Pick One</span></div>
+      <div class="rm-fork">
+        <div class="rm-node" data-id="python-analyst" data-desc="Python is the most widely adopted language for data analysis, with a huge ecosystem of libraries.">Python</div>
+        <div class="rm-node" data-id="r-language" data-desc="R was purpose-built for statistics and remains popular in academic and research-heavy analysis.">R</div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Analysis Libraries</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="pandas-lib" data-desc="Pandas provides dataframes for loading, filtering, and manipulating tabular data in Python.">Pandas <span class="dot"></span></div>
+        <div class="rm-chip" data-id="numpy-lib" data-desc="NumPy supplies fast array operations and numerical functions that pandas builds on top of.">NumPy <span class="dot"></span></div>
+        <div class="rm-chip" data-id="jupyter-notebooks" data-desc="Jupyter Notebooks combine code, output, and notes in one file, ideal for exploratory analysis.">Jupyter Notebooks <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-python-analysis" data-desc="Load, clean, and analyze a dataset end to end using a notebook and a data manipulation library.">Checkpoint — Scripted Analysis <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="analysis-layer" data-desc="Apply statistical and analytical techniques to move from raw numbers to defensible, useful conclusions." >5. Analysis Techniques</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Statistical Methods</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="hypothesis-testing" data-desc="Hypothesis testing checks whether an observed pattern is statistically meaningful or likely due to chance.">Hypothesis Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="regression-analysis" data-desc="Regression analysis models the relationship between a variable and one or more predictors.">Regression Analysis <span class="dot"></span></div>
+        <div class="rm-chip" data-id="ab-testing" data-desc="A/B testing compares two versions of something to measure which one performs better statistically.">A/B Testing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="data-mining" data-desc="Data mining techniques surface hidden patterns and relationships across large datasets.">Data Mining <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-insights" data-desc="Turn a real dataset into a documented insight: a tested hypothesis, a model, and a clear conclusion.">Checkpoint — Applied Insight</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="viz-layer" data-desc="Translate findings into visuals and narratives that stakeholders can actually act on." >6. Data Visualization & Reporting</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>BI & Visualization Tools</h3><span class="rm-branch-tag" style="background:rgba(45,212,191,.12);color:var(--teal)">Presentation</span></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="power-bi" data-desc="Power BI builds interactive dashboards and reports connected directly to live business data sources.">Power BI <span class="dot"></span></div>
+        <div class="rm-chip" data-id="tableau-tool" data-desc="Tableau is a leading visualization platform for building shareable, interactive dashboards.">Tableau <span class="dot"></span></div>
+        <div class="rm-chip" data-id="matplotlib-seaborn" data-desc="Matplotlib and Seaborn create custom charts directly from Python code during analysis.">Matplotlib & Seaborn <span class="dot"></span></div>
+        <div class="rm-chip" data-id="looker-studio" data-desc="Looker Studio builds free, shareable dashboards connected to common data sources.">Looker Studio <span class="opt">Optional</span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Data Storytelling</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="dashboard-design" data-desc="Good dashboard design highlights the metrics that matter and avoids overwhelming the viewer.">Dashboard Design <span class="dot"></span></div>
+        <div class="rm-chip" data-id="report-writing" data-desc="Clear written reports translate analysis into recommendations a non-technical audience can act on.">Report Writing <span class="dot"></span></div>
+        <div class="rm-chip" data-id="stakeholder-comms" data-desc="Presenting findings to stakeholders means framing insights around business impact, not just numbers.">Stakeholder Communication <span class="dot"></span></div>
+        <div class="rm-chip" data-id="cp-dashboard" data-desc="Publish an interactive dashboard that tells a clear, accurate story from real data.">Checkpoint — Dashboard Shipped <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="advanced-layer" data-desc="Extend your toolkit toward predictive work and the adjacent skills that senior analysts are expected to know." >7. Advanced Analytics</div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-branch">
+      <div class="rm-branch-head"><h3>Predictive & Adjacent Skills</h3></div>
+      <div class="rm-branch-grid">
+        <div class="rm-chip" data-id="predictive-modeling" data-desc="Predictive modeling uses historical data to forecast future outcomes and trends.">Predictive Modeling <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="ml-basics-analyst" data-desc="Basic machine learning concepts help analysts understand when a problem needs modeling beyond statistics.">ML Fundamentals <span class="opt">Optional</span></div>
+        <div class="rm-chip" data-id="version-control-analyst" data-desc="Git tracks changes to analysis scripts and notebooks as projects evolve over time.">Git Basics <span class="dot"></span></div>
+        <div class="rm-chip" data-id="business-acumen" data-desc="Understanding the business context is what turns a correct number into a useful recommendation.">Business Acumen <span class="dot"></span></div>
+      </div>
+    </div>
+    <div class="rm-connector"></div>
+
+    <div class="rm-node" data-id="cp-analyst-mastered" data-desc="Achieve full-cycle mastery: collect, clean, analyze, and present data as a clear, trustworthy, data-driven recommendation.">Checkpoint — Data Analyst Mastered</div>
+
+  </div>
+</div>
+
+<div class="node-detail" id="nodeDetail">
+  <div class="nd-head"><h4 id="ndTitle">Title</h4><button class="nd-close" onclick="closeDetail()">✕</button></div>
+  <div class="nd-desc" id="ndDesc">Description</div>
+  <div class="nd-actions">
+    <button class="nd-btn primary" id="ndToggle" onclick="toggleDone()">Mark as done</button>
+    <button class="nd-btn" onclick="toast('Resources panel coming soon')">Resources →</button>
+  </div>
+</div>
+
+<article class="article" id="projects">
+  <h2>What is Data Analysis?</h2>
+  <p>Data analysis is the process of turning raw data into insights that support strategic business decisions. It involves collecting data from different sources, cleaning it to remove errors, and applying techniques to find patterns and spot anomalies. The role is often confused with data science, but the two are <strong>not the same</strong> — data analysts focus more on interpreting existing data than building new models.</p>
+  <p>Visualization tools like Power BI and Excel help present that data in a way stakeholders can actually interpret, which is what turns raw numbers into <strong>data-driven decisions</strong>.</p>
+
+  <h2>What does a Data Analyst actually do?</h2>
+  <p>A data analyst's work spans the full journey from collecting data to presenting findings — gathering data from databases and spreadsheets, cleaning it, and applying techniques such as regression analysis to model it. The end goal is always the same: identify trends and predict outcomes that the business can act on.</p>
+  <p>With a foundation in both computer science and statistics, analysts use programming languages and visualization tools to generate the reports that support strategic decisions. The role sits at the intersection of technical skill and business understanding — a correct number is only useful once someone understands what it means for the business.</p>
+
+  <h2>Which tools do Data Analysts use?</h2>
+  <p>Data analysts typically start with spreadsheets and SQL to pull and shape data, move into a programming language for deeper analysis, and finish with a visualization tool to communicate results clearly.</p>
+  <div class="tech-grid">
+    <div class="tech-card"><div class="tc-name">Data Layer</div><p>Pulls structured data from relational databases and warehouses using SQL, joins, and aggregations.</p></div>
+    <div class="tech-card"><div class="tc-name">Analysis Layer</div><p>Cleans and models data using Python or R, pandas, and core statistical techniques like regression.</p></div>
+    <div class="tech-card"><div class="tc-name">Presentation Layer</div><p>Turns findings into interactive dashboards and reports using Power BI, Tableau, or Looker Studio.</p></div>
+  </div>
+
+  <h2>What skills does a Data Analyst need?</h2>
+  <p>This roadmap targets beginners looking to build a practical, hireable skill set. Beyond basic computer literacy, these are the checkpoints that mark real progress:</p>
+  <div class="skill-list">
+    <div class="skill-row"><b>1. Spreadsheet Modeling</b> Building formulas, pivot tables, and summary views in Excel or Google Sheets.</div>
+    <div class="skill-row"><b>2. Summary Statistics</b> Calculating and interpreting mean, median, variance, and distribution shape.</div>
+    <div class="skill-row"><b>3. SQL Querying</b> Writing multi-table queries with joins, filters, and aggregations.</div>
+    <div class="skill-row"><b>4. Data Cleaning</b> Removing duplicates, fixing inconsistencies, and handling missing values reliably.</div>
+    <div class="skill-row"><b>5. Scripted Analysis</b> Using Python or R with pandas to analyze data programmatically.</div>
+    <div class="skill-row"><b>6. Statistical Testing</b> Applying hypothesis tests, regression, and A/B testing to validate findings.</div>
+    <div class="skill-row"><b>7. Applied Insight</b> Turning a raw dataset into a tested, documented conclusion.</div>
+    <div class="skill-row"><b>8. Dashboard Building</b> Creating interactive dashboards in Power BI or Tableau.</div>
+    <div class="skill-row"><b>9. Data Storytelling</b> Writing reports and presenting findings to non-technical stakeholders.</div>
+    <div class="skill-row"><b>10. Business Acumen</b> Framing insights around the business context they're meant to support.</div>
+  </div>
+  <p>Use the checkpoints as milestones, and build a small project at each one — a real analysis on real data is what proves the skill.</p>
+</article>
+
+<section class="faq-wrap">
+  <h2 style="font-family:'Space Grotesk',sans-serif;font-size:1.3rem;margin-bottom:1rem">Frequently Asked Questions</h2>
+  <div id="faqList">
+    <div class="faq-item">
+      <div class="faq-q">Is Data Analysis a good career choice? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes. As organizations increasingly rely on data to support decisions, demand for people who can analyze, interpret, and identify trends in that data stays consistently high. The field also keeps evolving with new techniques like AI-assisted analysis and modern visualization tools, keeping the work both challenging and rewarding.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What qualifications do I need to be a Data Analyst? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">There's no single required qualification. What matters most is demonstrable skill with SQL, spreadsheets, statistics, and at least one visualization tool. A portfolio of real analysis projects usually carries more weight than a specific degree.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Can I teach myself Data Analysis? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Yes, many working analysts are self-taught. The core tools — spreadsheets, SQL, a programming language, and a BI tool — all have strong free learning resources. Consistent practice on real datasets matters more than the learning path you choose.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How is a Data Analyst different from a Data Engineer? <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg></div>
+      <div class="faq-a">Data Engineers build and maintain the pipelines and infrastructure that move and store data. Data Analysts consume that data to find patterns and produce insights. In smaller teams the two roles often overlap, but the core focus differs: infrastructure versus interpretation.</div>
+    </div>
+  </div>
+</section>
+
+<section class="community">
+  <div class="community-card">
+    <h2>Join the Community</h2>
+    <p>DevPath is built and shaped by developers learning in public — these are real numbers from the community.</p>
+    <div class="cstat-row">
+      <div class="cstat">
+        <div class="cstat-n">358<span style="color:var(--blue)">K</span></div>
+        <div class="cstat-l">GitHub Stars</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Thanks for the support! ⭐');return false">Star on GitHub</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">2.8<span style="color:var(--mint)">M</span></div>
+        <div class="cstat-l">Registered Users</div>
+        <div class="cstat-growth">+90k every month</div>
+        <a href="signup.html" class="btn-ghost">Register yourself</a>
+      </div>
+      <div class="cstat">
+        <div class="cstat-n">49<span style="color:var(--violet)">K</span></div>
+        <div class="cstat-l">Discord Members</div>
+        <div class="cstat-growth">+2k every month</div>
+        <a href="#" class="btn-ghost" onclick="toast('Discord invite coming soon');return false">Join on Discord</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div><strong style="font-family:'Space Grotesk',sans-serif;color:var(--text)">DevPath</strong> &nbsp;·&nbsp; Community-driven developer learning</div>
+  <div class="footer-links">
+    <a href="index.html#explore">Roadmaps</a><a href="#">Guides</a><a href="#">FAQs</a><a href="#">YouTube</a><a href="#">Discord</a><a href="#">Privacy</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
+
+// ── FAQ ACCORDION ──
+document.getElementById('faqList').addEventListener('click',e=>{
+  const q=e.target.closest('.faq-q');if(!q)return;
+  const item=q.closest('.faq-item');
+  const wasOpen=item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));
+  if(!wasOpen)item.classList.add('open');
+});
+
+// ── ROADMAP NODE PROGRESS ──
+const allNodes=()=>document.querySelectorAll('.rm-node[data-id], .rm-chip[data-id]');
+const detail=document.getElementById('nodeDetail');
+const ndTitle=document.getElementById('ndTitle');
+const ndDesc=document.getElementById('ndDesc');
+const ndToggle=document.getElementById('ndToggle');
+let activeNode=null;
+
+function updateProgress(){
+  const nodes=allNodes();
+  const done=document.querySelectorAll('.rm-node.done[data-id], .rm-chip.done[data-id]').length;
+  document.getElementById('progressCount').textContent=done;
+  document.getElementById('progressTotal').textContent=nodes.length;
+  document.getElementById('progressBar').style.width=(nodes.length?Math.round(done/nodes.length*100):0)+'%';
+}
+
+function openDetail(node,evt){
+  activeNode=node;
+  ndTitle.textContent=node.textContent.replace('✓','').trim().split('Optional')[0].trim();
+  ndDesc.textContent=node.dataset.desc||'No description yet.';
+  ndToggle.textContent=node.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',node.classList.contains('done'));
+
+  const detailWidth=detail.offsetWidth||300;
+  const detailHeight=detail.offsetHeight||140;
+
+  const rect=node.getBoundingClientRect();
+  let top=rect.bottom+8;
+  let left=rect.left;
+
+  const maxLeft=window.innerWidth-detailWidth-12;
+  if(left>maxLeft)left=Math.max(12,maxLeft);
+  if(left<12)left=12;
+
+  if(top+detailHeight>window.innerHeight-12){
+    top=rect.top-detailHeight-8;
+    if(top<12)top=12;
+  }
+
+  detail.style.top=top+'px';
+  detail.style.left=left+'px';
+  detail.classList.add('show');
+}
+function closeDetail(){detail.classList.remove('show');activeNode=null}
+function toggleDone(){
+  if(!activeNode)return;
+  activeNode.classList.toggle('done');
+  ndToggle.textContent=activeNode.classList.contains('done')?'Mark as not done':'Mark as done';
+  ndToggle.classList.toggle('undone',activeNode.classList.contains('done'));
+  updateProgress();
+}
+
+allNodes().forEach(n=>{
+  n.addEventListener('click',e=>{e.stopPropagation();openDetail(n,e)});
+});
+document.addEventListener('click',e=>{
+  if(!detail.contains(e.target)&&!e.target.closest('[data-id]'))closeDetail();
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeDetail()});
+window.addEventListener('scroll',()=>{if(activeNode)closeDetail()},{passive:true});
+window.addEventListener('resize',()=>{if(activeNode)closeDetail()});
+
+updateProgress();
+</script>
+</body>
+</html>
