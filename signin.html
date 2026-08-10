@@ -266,7 +266,10 @@ nav{position:relative;z-index:200;height:56px;display:flex;align-items:center;ju
 .toast.show{opacity:1;transform:translateY(0)}
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+const supabase=window.supabase.createClient('https://qkljnymsgorzlglohnql.supabase.co','eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrbGpueW1zZ29yemxnbG9obnFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzNDg3OTIsImV4cCI6MjEwMTkyNDc5Mn0.ogG9SA3UaZLquQN93Ow6Q-LZZAP6_-40CQIO46uPXJI');
+
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000)}
 
 function oauth(provider){toast(`Connecting to ${provider}… (demo)`)}
@@ -305,7 +308,7 @@ const spinner=document.getElementById('spinner');
 const submitLabel=document.getElementById('submitLabel');
 const submitArrow=document.getElementById('submitArrow');
 
-form.addEventListener('submit',function(e){
+form.addEventListener('submit',async function(e){
   e.preventDefault();
   if(!emailEl.value||!passEl.value){
     toast('Enter your email and password to continue');
@@ -316,23 +319,38 @@ form.addEventListener('submit',function(e){
   submitLabel.textContent='Verifying…';
   submitArrow.style.display='none';
 
-  setTimeout(()=>{
-    // advance node 2 -> passed, node 3 -> now
-    const nodes=nodePath.querySelectorAll('.node');
-    nodes[1].classList.remove('now');nodes[1].classList.add('passed');
-    nodes[1].querySelector('.node-dot').textContent='✓';
-    nodes[2].classList.add('now');
-    nodes[2].querySelector('.node-sub').textContent='Pulling your roadmap…';
+  const nodes=nodePath.querySelectorAll('.node');
+  nodes[1].classList.remove('now');nodes[1].classList.add('passed');
+  nodes[1].querySelector('.node-dot').textContent='✓';
+  nodes[2].classList.add('now');
+  nodes[2].querySelector('.node-sub').textContent='Verifying credentials…';
 
-    setTimeout(()=>{
-      nodes[2].classList.remove('now');nodes[2].classList.add('passed');
-      nodes[2].querySelector('.node-dot').textContent='✓';
-      nodes[3].classList.add('now');
-      nodes[3].querySelector('.node-sub').textContent='Redirecting…';
-      submitLabel.textContent='Welcome back';
-      toast('Signed in — this is a front-end demo, no account was created');
-    },900);
-  },1100);
+  // ── REAL SIGN-IN ──
+  const {data,error}=await supabase.auth.signInWithPassword({
+    email:emailEl.value.trim(),
+    password:passEl.value
+  });
+
+  if(error){
+    toast('Invalid email or password');
+    submitBtn.disabled=false;
+    spinner.style.display='none';
+    submitLabel.textContent='Sign in';
+    submitArrow.style.display='inline-block';
+    nodes[1].classList.add('now');nodes[1].classList.remove('passed');
+    nodes[1].querySelector('.node-dot').textContent='2';
+    nodes[2].classList.remove('now');
+    return;
+  }
+
+  nodes[2].classList.remove('now');nodes[2].classList.add('passed');
+  nodes[2].querySelector('.node-dot').textContent='✓';
+  nodes[3].classList.add('now');
+  nodes[3].querySelector('.node-sub').textContent='Redirecting…';
+  submitLabel.textContent='Welcome back';
+  toast('Signed in!');
+
+  setTimeout(()=>{window.location.href='index.html'},900);
 });
 
 // allow Enter from either field to submit
