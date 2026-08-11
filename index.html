@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>DevPath — Find Your Developer Path</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -224,7 +225,14 @@ footer a:hover{color:var(--text)}
     <a href="#graph">Skill Graph</a>
     <a href="#community">Community</a>
     <a href="daily-challenge.html">Challenges</a>
-    <a href="signup.html" class="btn-nav">Sign Up Free</a>
+    <span id="auth-guest">
+      <a href="signin.html">Sign In</a>
+      <a href="signup.html" class="btn-nav">Sign Up Free</a>
+    </span>
+    <span id="auth-user" style="display:none;align-items:center;gap:1rem">
+      <span id="auth-username" style="color:var(--text);font-weight:500"></span>
+      <a href="#" id="auth-signout" class="btn-nav" style="background:var(--border2)">Sign Out</a>
+    </span>
   </div>
 </nav>
 
@@ -584,6 +592,54 @@ canvas.addEventListener('click',e=>{
 
 window.addEventListener('resize',resize);
 resize();
+</script>
+
+<script>
+  // ---- Replace these with your actual Supabase project values ----
+  const SUPABASE_URL = "https://cgeunysucdymiqvvagfw.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZXVueXN1Y2R5bWlxdnZhZ2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MjUzNTAsImV4cCI6MjEwMjAwMTM1MH0.IZ9YJ8Nega_c_gS9uWORaaY8oYWV36G82s9OxVbri0w";
+  // -------------------------------------------------------------
+
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const authGuest = document.getElementById('auth-guest');
+  const authUser = document.getElementById('auth-user');
+  const authUsername = document.getElementById('auth-username');
+  const authSignout = document.getElementById('auth-signout');
+
+  async function updateAuthUI(session) {
+    if (session) {
+      authGuest.style.display = 'none';
+      authUser.style.display = 'flex';
+
+      const { data: profile } = await supabaseClient
+        .from('profiles')
+        .select('username')
+        .eq('id', session.user.id)
+        .single();
+
+      authUsername.textContent = profile?.username || session.user.email.split('@')[0];
+    } else {
+      authGuest.style.display = '';
+      authUser.style.display = 'none';
+    }
+  }
+
+  // Check current session on page load
+  supabaseClient.auth.getSession().then(({ data: { session } }) => {
+    updateAuthUI(session);
+  });
+
+  // Keep the nav in sync if auth state changes (e.g. after signing in on another tab)
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    updateAuthUI(session);
+  });
+
+  authSignout.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await supabaseClient.auth.signOut();
+    window.location.href = 'index.html';
+  });
 </script>
 </body>
 </html>
