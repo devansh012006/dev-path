@@ -126,14 +126,6 @@
       return;
     }
 
-    // Create a matching row in the profiles table
-    if (data.user) {
-      await supabaseClient.from("profiles").insert({
-        id: data.user.id,
-        username: email.split("@")[0]
-      });
-    }
-
     showMessage("Account created! Check your email to confirm, then sign in.", "success");
     submitBtn.textContent = "Sign Up";
     setTimeout(() => { window.location.href = "signin.html"; }, 2000);
