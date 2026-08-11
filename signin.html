@@ -95,7 +95,7 @@
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNnZXVueXN1Y2R5bWlxdnZhZ2Z3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY0MjUzNTAsImV4cCI6MjEwMjAwMTM1MH0.IZ9YJ8Nega_c_gS9uWORaaY8oYWV36G82s9OxVbri0w";
   // -------------------------------------------------------------
 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   const form = document.getElementById("signin-form");
   const messageBox = document.getElementById("message");
@@ -107,7 +107,7 @@
   }
 
   // If already signed in, skip straight to the dashboard/roadmap page
-  supabase.auth.getSession().then(({ data: { session } }) => {
+  supabaseClient.auth.getSession().then(({ data: { session } }) => {
     if (session) {
       window.location.href = "index.html";
     }
@@ -121,7 +121,7 @@
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email,
       password
     });
